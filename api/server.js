@@ -36,13 +36,13 @@ app.use("/api", require("./routes/whatsapp-webhook"));
 app.use("/api", require("./routes/parse-bank-statement"));
 
 // ГРУППА C (раскомментировать после создания файлов):
-// app.use("/api", require("./routes/ocr-receipt"));
-// app.use("/api", require("./routes/scan-linen"));
-// app.use("/api", require("./routes/transcribe-audio"));
-// app.use("/api", require("./routes/smart-voice-input"));
-// app.use("/api", require("./routes/sync-ical"));
-// app.use("/api", require("./routes/bot-api"));
-// app.use("/api", require("./routes/telegram-webhook"));
+app.use("/api", require("./routes/ocr-receipt"));
+app.use("/api", require("./routes/scan-linen"));
+app.use("/api", require("./routes/transcribe-audio"));
+app.use("/api", require("./routes/smart-voice-input"));
+app.use("/api", require("./routes/sync-ical"));
+app.use("/api", require("./routes/bot-api"));
+app.use("/api", require("./routes/telegram-webhook"));
 
 // CRON: еженедельное напоминание (понедельник 9:00 Valencia = UTC+2 → 07:00 UTC)
 cron.schedule("0 7 * * 1", async () => {
@@ -54,10 +54,10 @@ cron.schedule("0 7 * * 1", async () => {
 });
 
 // CRON: iCal sync каждые 6 часов (раскомментировать после создания sync-ical):
-// cron.schedule("0 */6 * * *", async () => {
-//   try { const h = require("./routes/sync-ical"); await h.runSync(); }
-//   catch (e) { console.error("[CRON] sync-ical error:", e.message); }
-// });
+cron.schedule("0 */6 * * *", async () => {
+  try { const h = require("./routes/sync-ical"); await h.runSync(); }
+  catch (e) { console.error("[CRON] sync-ical error:", e.message); }
+});
 
 app.use((err, req, res, next) => {
   console.error("[ERROR]", err.message);
