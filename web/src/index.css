@@ -1,0 +1,129 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 210 20% 98%;
+    --foreground: 215 25% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 25% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 25% 15%;
+
+    --primary: 199 89% 48%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 20% 92%;
+    --secondary-foreground: 215 25% 15%;
+
+    --muted: 210 20% 92%;
+    --muted-foreground: 215 15% 45%;
+
+    --accent: 186 78% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 20% 88%;
+    --input: 214 20% 88%;
+    --ring: 199 89% 48%;
+
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* App background gradient (light) */
+    --gradient-light: 
+      radial-gradient(1200px 600px at 10% 0%, hsl(var(--accent) / 0.10), transparent 60%),
+      radial-gradient(1000px 500px at 90% 10%, hsl(var(--warning) / 0.10), transparent 60%),
+      linear-gradient(180deg, hsl(210 20% 98%), hsl(200 30% 96%));
+  }
+
+  .dark {
+    --background: 215 28% 17%;
+    --foreground: 210 20% 98%;
+
+    --card: 215 25% 20%;
+    --card-foreground: 210 20% 98%;
+
+    --popover: 215 25% 20%;
+    --popover-foreground: 210 20% 98%;
+
+    --primary: 199 89% 48%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 215 20% 25%;
+    --secondary-foreground: 210 20% 98%;
+
+    --muted: 215 20% 25%;
+    --muted-foreground: 215 15% 65%;
+
+    --accent: 186 78% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 215 20% 30%;
+    --input: 215 20% 30%;
+    --ring: 199 89% 48%;
+
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    --gradient-light: linear-gradient(135deg, hsl(215 28% 17% / 0.8), hsl(215 25% 20% / 0.9), hsl(220 25% 18% / 0.85));
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply text-foreground;
+    /* Photo + gradient overlay for visible, yet soft background */
+    background-image: var(--gradient-light), url('/images/interior-bg.jpg');
+    background-size: auto, cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed, fixed;
+    min-height: 100vh;
+  }
+
+  html, body, #root { min-height: 100%; }
+  html { @apply dark; }
+}
