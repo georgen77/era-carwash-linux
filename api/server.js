@@ -25,15 +25,15 @@ app.use("/api", require("./routes/restore-movements"));
 app.use("/api", require("./routes/weekly-payment-reminder"));
 
 // ГРУППА B (раскомментировать после создания файлов):
-// app.use("/api", require("./routes/cleaning-auth"));
-// app.use("/api", require("./routes/cleaning-bookings"));
-// app.use("/api", require("./routes/cleaner-portal"));
-// app.use("/api", require("./routes/emma-cash"));
-// app.use("/api", require("./routes/main-cash"));
-// app.use("/api", require("./routes/task-ai-chat"));
-// app.use("/api", require("./routes/bot-movement"));
-// app.use("/api", require("./routes/whatsapp-webhook"));
-// app.use("/api", require("./routes/parse-bank-statement"));
+app.use("/api", require("./routes/cleaning-auth"));
+app.use("/api", require("./routes/cleaning-bookings"));
+app.use("/api", require("./routes/cleaner-portal"));
+app.use("/api", require("./routes/emma-cash"));
+app.use("/api", require("./routes/main-cash"));
+app.use("/api", require("./routes/task-ai-chat"));
+app.use("/api", require("./routes/bot-movement"));
+app.use("/api", require("./routes/whatsapp-webhook"));
+app.use("/api", require("./routes/parse-bank-statement"));
 
 // ГРУППА C (раскомментировать после создания файлов):
 // app.use("/api", require("./routes/ocr-receipt"));
