@@ -1,0 +1,1 @@
+ALTER TYPE item_type ADD VALUE IF NOT EXISTS 'mattress_pad';

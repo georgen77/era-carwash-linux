@@ -1,0 +1,1 @@
+ALTER TABLE public.cleaning_schedule ADD COLUMN IF NOT EXISTS tasks jsonb DEFAULT '{}'::jsonb;

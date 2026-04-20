@@ -1,0 +1,1 @@
+ALTER TABLE public.emma_transactions ALTER COLUMN created_by DROP NOT NULL;

@@ -1,0 +1,1 @@
+ALTER TABLE public.emma_transactions ADD COLUMN IF NOT EXISTS location text;

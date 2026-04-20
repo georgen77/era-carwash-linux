@@ -1,0 +1,1 @@
+CREATE POLICY "Anyone can delete movements" ON public.movements FOR DELETE TO public USING (true);
