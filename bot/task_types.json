@@ -1,0 +1,47 @@
+[
+  {
+    "key": "guests",
+    "name": "Гостей",
+    "type": "number"
+  },
+  {
+    "key": "beds",
+    "name": "Кроватей",
+    "type": "number"
+  },
+  {
+    "key": "spa",
+    "name": "Спа",
+    "type": "boolean"
+  },
+  {
+    "key": "crib",
+    "name": "Детская кроватка",
+    "type": "boolean"
+  },
+  {
+    "key": "highchair",
+    "name": "Детский стульчик",
+    "type": "boolean"
+  },
+  {
+    "key": "extra_linen",
+    "name": "Доп. бельё",
+    "type": "boolean"
+  },
+  {
+    "key": "extra_towels",
+    "name": "Доп. полотенца",
+    "type": "boolean"
+  },
+  {
+    "key": "custom_1775457098466",
+    "name": "Украшения 💕",
+    "type": "boolean"
+  },
+  {
+    "key": "custom_1775457158157",
+    "name": "Украшение 🎂",
+    "type": "boolean"
+  }
+]

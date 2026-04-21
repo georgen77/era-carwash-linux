@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#1a1a2e">
+  <title>ERA Deluxe Apartments — Your Guide</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 70%, #e94560 100%);
+      min-height: 100vh;
+      color: #1a1a2e;
+      padding-bottom: 40px;
+    }
+
+    /* HEADER */
+    .header { background: rgba(255,255,255,0.07); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.12); padding: 24px 20px 20px; text-align: center; }
+    .logo { font-size: 12px; letter-spacing: 3px; color: rgba(255,255,255,0.5); text-transform: uppercase; margin-bottom: 6px; }
+    .apt-name { font-size: 24px; font-weight: 700; color: #fff; }
+    .welcome-sub { font-size: 14px; color: rgba(255,255,255,0.6); margin-top: 4px; }
+
+    /* CONTAINER */
+    .container { max-width: 520px; margin: 0 auto; padding: 20px 16px; }
+
+    /* CARD */
+    .card { background: rgba(255,255,255,0.95); border-radius: 20px; padding: 22px 20px; margin-bottom: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.18); }
+    .card-title { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #e94560; margin-bottom: 14px; display: flex; align-items: center; gap: 7px; }
+
+    /* ACCESS CODE */
+    .code-card { background: linear-gradient(135deg, #0f3460, #e94560); text-align: center; padding: 30px 20px; }
+    .code-card .card-title { color: rgba(255,255,255,0.7); justify-content: center; }
+    .code-value { font-size: 72px; font-weight: 900; letter-spacing: 8px; color: #fff; line-height: 1; text-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    .code-hash { color: rgba(255,255,255,0.5); font-size: 48px; font-weight: 300; }
+    .code-hint { font-size: 13px; color: rgba(255,255,255,0.65); margin: 10px 0 18px; line-height: 1.5; }
+    .copy-btn { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fff; border-radius: 30px; padding: 10px 28px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+    .copy-btn:hover { background: rgba(255,255,255,0.25); }
+    .copy-btn.copied { background: rgba(100,220,100,0.3); border-color: rgba(100,220,100,0.6); }
+
+    /* STAY */
+    .stay-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; }
+    .stay-row + .stay-row { border-top: 1px solid #f0f0f0; }
+    .stay-icon { font-size: 24px; width: 36px; text-align: center; flex-shrink: 0; }
+    .stay-label { font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 1px; }
+    .stay-value { font-size: 18px; font-weight: 700; color: #0f3460; margin-top: 2px; }
+    .stay-sub { font-size: 12px; color: #666; margin-top: 1px; }
+
+    /* WIFI */
+    .wifi-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; }
+    .wifi-row + .wifi-row { border-top: 1px solid #f0f0f0; }
+    .wifi-label { font-size: 12px; color: #999; }
+    .wifi-value { font-size: 15px; font-weight: 600; color: #0f3460; }
+    .wifi-copy { background: #f0f4ff; border: none; border-radius: 8px; padding: 6px 12px; font-size: 12px; cursor: pointer; color: #5c6bc0; font-weight: 600; }
+    .wifi-copy.copied { background: #d4f5d4; color: #2d8a2d; }
+    .wifi-actions { display: flex; gap: 8px; margin-top: 14px; }
+    .wifi-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; background: #0f3460; color: #fff; border: none; border-radius: 12px; padding: 12px; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; }
+    .wifi-btn.qr { background: #e94560; }
+
+    /* QR MODAL */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 1000; align-items: center; justify-content: center; }
+    .modal-overlay.open { display: flex; }
+    .modal-box { background: #fff; border-radius: 24px; padding: 28px; text-align: center; max-width: 300px; width: 90%; }
+    .modal-title { font-size: 16px; font-weight: 700; color: #0f3460; margin-bottom: 6px; }
+    .modal-sub { font-size: 12px; color: #888; margin-bottom: 18px; }
+    .modal-box img { width: 200px; height: 200px; border-radius: 12px; }
+    .modal-close { margin-top: 18px; background: #f0f4ff; border: none; border-radius: 12px; padding: 12px 28px; font-size: 14px; font-weight: 600; color: #0f3460; cursor: pointer; }
+
+    /* MAP BUTTON */
+    .address-text { font-size: 16px; font-weight: 600; color: #0f3460; line-height: 1.4; }
+    .address-sub { font-size: 13px; color: #666; margin-top: 4px; margin-bottom: 14px; }
+    .map-btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: #0f3460; color: #fff; border-radius: 14px; padding: 14px; font-size: 15px; font-weight: 600; text-decoration: none; transition: background 0.2s; }
+    .map-btn:hover { background: #e94560; }
+
+    /* PHOTOS */
+    .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .photo-card { border-radius: 14px; overflow: hidden; aspect-ratio: 4/3; background: linear-gradient(135deg, #e8eaf6, #c5cae9); cursor: pointer; position: relative; }
+    .photo-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .photo-card-label { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.6)); color: #fff; font-size: 11px; font-weight: 600; padding: 8px 10px 8px; text-align: center; }
+    .photo-placeholder { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #5c6bc0; }
+    .photo-placeholder-icon { font-size: 32px; margin-bottom: 6px; }
+    .photo-placeholder-label { font-size: 11px; font-weight: 600; color: #3949ab; }
+    .photo-full { grid-column: 1 / -1; aspect-ratio: 16/9; }
+
+    /* LIGHTBOX */
+    .lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 2000; align-items: center; justify-content: center; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 95vw; max-height: 85vh; object-fit: contain; border-radius: 12px; }
+    .lightbox-close { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.15); border: none; color: #fff; font-size: 28px; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+    /* VIDEO */
+    .video-wrap { border-radius: 16px; overflow: hidden; position: relative; padding-bottom: 56.25%; height: 0; background: #000; }
+    .video-wrap + .video-wrap { margin-top: 14px; }
+    .video-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+    .video-label { font-size: 13px; font-weight: 600; color: #333; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+
+    /* WEATHER */
+    .weather-current { display: flex; align-items: center; gap: 16px; padding: 8px 0 16px; }
+    .weather-temp { font-size: 48px; font-weight: 800; color: #0f3460; line-height: 1; }
+    .weather-desc { font-size: 15px; font-weight: 600; color: #333; }
+    .weather-feels { font-size: 12px; color: #888; margin-top: 3px; }
+    .weather-meta { font-size: 12px; color: #666; margin-top: 2px; }
+    .weather-hourly { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 12px; }
+    .weather-hourly::-webkit-scrollbar { height: 0; }
+    .weather-hour { flex-shrink: 0; background: #f5f7ff; border-radius: 12px; padding: 10px 12px; text-align: center; min-width: 56px; }
+    .weather-hour-time { font-size: 11px; color: #888; font-weight: 600; }
+    .weather-hour-icon { font-size: 20px; margin: 4px 0; }
+    .weather-hour-temp { font-size: 14px; font-weight: 700; color: #0f3460; }
+    .weather-tomorrow { display: flex; align-items: center; justify-content: space-between; padding: 12px 0 0; border-top: 1px solid #f0f0f0; }
+    .weather-tomorrow-label { font-size: 13px; font-weight: 600; color: #333; }
+    .weather-tomorrow-range { font-size: 14px; font-weight: 700; color: #0f3460; }
+    .weather-loading { text-align: center; padding: 20px; color: #999; font-size: 14px; }
+    /* ACCESS SCREEN */
+    .access-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 24px; text-align: center; }
+    .access-icon { font-size: 64px; margin-bottom: 20px; }
+    .access-title { font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 10px; }
+    .access-sub { font-size: 15px; color: rgba(255,255,255,0.7); line-height: 1.6; }
+    .weather-week { margin-top: 12px; border-top: 1px solid #f0f0f0; padding-top: 10px; }
+    .weather-day-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; }
+    .weather-day-row + .weather-day-row { border-top: 1px solid #f8f8f8; }
+    .weather-day-name { font-size: 13px; font-weight: 600; color: #333; min-width: 60px; }
+    .weather-day-icon { font-size: 18px; }
+    .weather-day-range { font-size: 13px; font-weight: 700; color: #0f3460; }
+
+    /* SPA */
+    .tip-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; font-size: 14px; color: #333; line-height: 1.5; }
+    .tip-row + .tip-row { border-top: 1px solid #f0f0f0; }
+    .tip-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+    .tip-link { color: #0f3460; text-decoration: none; font-weight: 600; }
+    .tip-link:hover { text-decoration: underline; }
+
+    /* ATTRACTIONS */
+    .place-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; }
+    .place-item + .place-item { border-top: 1px solid #f0f0f0; }
+    .place-emoji { font-size: 26px; width: 36px; flex-shrink: 0; text-align: center; }
+    .place-name { font-size: 15px; font-weight: 700; color: #0f3460; }
+    .place-desc { font-size: 13px; color: #555; line-height: 1.5; margin-top: 3px; }
+    .place-dist { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; background: #f0f4ff; color: #5c6bc0; border-radius: 6px; padding: 3px 8px; margin-top: 6px; font-weight: 600; text-decoration: none; cursor: pointer; border: none; }
+    .place-dist:hover { background: #e0e8ff; }
+
+    /* FOOD CHIPS */
+    .food-chip { display: inline-flex; align-items: center; gap: 5px; border-radius: 20px; padding: 7px 13px; font-size: 13px; font-weight: 500; margin: 4px 4px 4px 0; text-decoration: none; cursor: pointer; }
+    .food-chip-plain { background: #fff8f0; border: 1px solid #ffd4b0; color: #b35a00; }
+    .food-chip-link { background: #f0f4ff; border: 1px solid #c5cae9; color: #3949ab; }
+    .food-chip-link:hover { background: #e0e8ff; }
+
+    /* GETTING AROUND */
+    .transport-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; }
+    .transport-item + .transport-item { border-top: 1px solid #f0f0f0; }
+    .transport-icon { font-size: 24px; width: 36px; flex-shrink: 0; text-align: center; }
+    .transport-name { font-size: 15px; font-weight: 700; color: #0f3460; }
+    .transport-desc { font-size: 13px; color: #555; line-height: 1.5; margin-top: 2px; }
+    .app-badges { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+    .app-badge { display: inline-flex; align-items: center; gap: 5px; background: #1a1a2e; color: #fff; border-radius: 8px; padding: 5px 12px; font-size: 11px; font-weight: 600; text-decoration: none; }
+    .app-badge.ios { background: #000; }
+    .app-badge.android { background: #01875f; }
+    .app-badge.web { background: #0f3460; }
+
+    /* EMERGENCY */
+    .emergency-card { background: #fff8f8; border: 1px solid #ffd0d0; }
+    .sos-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; }
+    .sos-row + .sos-row { border-top: 1px solid #ffe0e0; }
+    .sos-label { font-size: 14px; color: #333; font-weight: 500; }
+    .sos-num { font-size: 20px; font-weight: 800; color: #e94560; text-decoration: none; letter-spacing: 1px; }
+    .sos-map { font-size: 13px; font-weight: 600; color: #0f3460; text-decoration: none; background: #f0f4ff; border-radius: 8px; padding: 4px 10px; }
+
+    .hidden { display: none !important; }
+    .footer { text-align: center; padding: 10px 20px; font-size: 12px; color: rgba(255,255,255,0.35); }
+
+    @media (max-width: 360px) { .code-value { font-size: 56px; } .code-hash { font-size: 38px; } }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">ERA Deluxe Apartments · Valencia</div>
+  <div class="apt-name" id="apt-name">Welcome!</div>
+  <div class="welcome-sub">Your complete stay guide ✨</div>
+</div>
+
+<div class="container">
+
+  <!-- ACCESS CODE -->
+  <div class="card code-card">
+    <div class="card-title">🔐 Your Door Access Code</div>
+    <div class="code-value" id="code-display">—</div>
+    <div class="code-hint">Enter this code on the keypad, then press <strong>#</strong><br>The # key unlocks the door</div>
+    <button class="copy-btn" onclick="copyCode()" id="copy-code-btn">📋 Copy code</button>
+  </div>
+
+  <!-- DATES -->
+  <div class="card">
+    <div class="card-title">📅 Your Stay</div>
+    <div class="stay-row">
+      <div class="stay-icon">🟢</div>
+      <div>
+        <div class="stay-label">Check-in — from</div>
+        <div class="stay-value" id="checkin-display">—</div>
+        <div class="stay-sub">Apartment will be ready for you</div>
+      </div>
+    </div>
+    <div class="stay-row">
+      <div class="stay-icon">🔴</div>
+      <div>
+        <div class="stay-label">Check-out — by</div>
+        <div class="stay-value" id="checkout-display">—</div>
+        <div class="stay-sub">Please leave the keypad locked on exit</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WIFI -->
+  <div class="card">
+    <div class="card-title">📶 WiFi</div>
+    <div class="wifi-row">
+      <div><div class="wifi-label">Network (2.4 GHz)</div><div class="wifi-value" id="wifi4g">—</div></div>
+      <button class="wifi-copy" onclick="copyText('wifi4g', this)">Copy</button>
+    </div>
+    <div class="wifi-row">
+      <div><div class="wifi-label">Network (5 GHz — faster)</div><div class="wifi-value" id="wifi5g">—</div></div>
+      <button class="wifi-copy" onclick="copyText('wifi5g', this)">Copy</button>
+    </div>
+    <div class="wifi-row">
+      <div><div class="wifi-label">Password</div><div class="wifi-value" id="wifi-pass">—</div></div>
+      <button class="wifi-copy" onclick="copyText('wifi-pass', this)">Copy</button>
+    </div>
+    <div class="wifi-actions">
+      <button class="wifi-btn" onclick="openWifiQr('5g')">📱 QR to connect (5 GHz)</button>
+    </div>
+  </div>
+
+  <!-- ADDRESS -->
+  <div class="card">
+    <div class="card-title">📍 Address & How to Find Us</div>
+    <div class="address-text" id="address-text">—</div>
+    <div class="address-sub" id="address-hint">Valencia, Spain</div>
+    <a href="#" class="map-btn" id="map-link" target="_blank" rel="noopener">🗺️ Open in Google Maps</a>
+  </div>
+
+  <!-- ENTRANCE PHOTOS -->
+  <div class="card">
+    <div class="card-title">🚪 How to Find Your Entrance</div>
+    <div class="photo-grid">
+      <div class="photo-card photo-full" onclick="openLightbox(this)" id="photo-entrance">
+        <div class="photo-placeholder"><div class="photo-placeholder-icon">🏠</div><div class="photo-placeholder-label">Main Entrance</div></div>
+        <div class="photo-card-label">Main Entrance</div>
+      </div>
+      <div class="photo-card" onclick="openLightbox(this)" id="photo-keypad">
+        <div class="photo-placeholder"><div class="photo-placeholder-icon">🔐</div><div class="photo-placeholder-label">Door Keypad</div></div>
+        <div class="photo-card-label">Door Keypad</div>
+      </div>
+      <div class="photo-card" onclick="openLightbox(this)" id="photo-entrance2">
+        <div class="photo-placeholder"><div class="photo-placeholder-icon">🏠</div><div class="photo-placeholder-label">Entrance View</div></div>
+        <div class="photo-card-label">Entrance View</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIDEO -->
+  <div class="card">
+    <div class="card-title">🎬 Video Instructions</div>
+    <div class="video-label">1️⃣ Sofa Unfolding</div>
+    <div class="video-wrap">
+      <iframe src="https://www.youtube.com/embed/ZskR7JiiBtQ?rel=0&modestbranding=1" title="How to enter" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+    </div>
+    <br>
+    <div class="video-label">2️⃣ IR Sauna Settings</div>
+    <div class="video-wrap">
+      <iframe src="https://www.youtube.com/embed/q4f1TKRt7H0?rel=0&modestbranding=1" title="Apartment features" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+    </div>
+  </div>
+
+  <!-- SPA -->
+  <div class="card hidden" id="spa-card">
+    <div class="card-title">🌊 Spa & Pool</div>
+    <div class="tip-row"><div class="tip-icon">🏊</div><div>Your apartment includes <strong>private pool access</strong>. Available 09:00–22:00. Towels provided inside.</div></div>
+    <div class="tip-row"><div class="tip-icon">♨️</div><div>The <strong>jacuzzi / spa</strong> uses the same door code. Enjoy!</div></div>
+    <div class="tip-row"><div class="tip-icon">☀️</div><div>Please shower before using the pool. Avoid sunscreen directly in the water.</div></div>
+  </div>
+
+  <!-- WEATHER -->
+  <div class="card">
+    <div class="card-title">🌤️ Valencia Weather</div>
+    <div id="weather-content"><div class="weather-loading">Loading weather...</div></div>
+  </div>
+
+  <!-- ATTRACTIONS -->
+  <div class="card">
+    <div class="card-title">🌇 Top Attractions</div>
+    <div id="attractions-list"></div>
+  </div>
+
+  <!-- FOOD -->
+  <div class="card">
+    <div class="card-title">🍽️ Food & Drinks — Must Try</div>
+    <div class="place-item">
+      <div class="place-emoji">🥘</div>
+      <div>
+        <div class="place-name">Authentic Paella</div>
+        <div class="place-desc">Valencia invented paella — eat it for <em>lunch</em> (never dinner!). Best: <strong>La Pepica</strong> on the beachfront or <strong>Casa Carmela</strong>.</div>
+      </div>
+    </div>
+    <div class="place-item">
+      <div class="place-emoji">🥤</div>
+      <div>
+        <div class="place-name">Horchata & Fartons</div>
+        <div class="place-desc">Valencia's iconic tiger-nut drink, ice-cold with fluffy pastry sticks. Try <strong>Horchatería de Santa Catalina</strong>.</div>
+      </div>
+    </div>
+    <div class="place-item">
+      <div class="place-emoji">🍊</div>
+      <div>
+        <div class="place-name">Agua de Valencia</div>
+        <div class="place-desc">Fresh orange juice + cava + vodka + gin. Order it by the pitcher on a terrace at sunset!</div>
+      </div>
+    </div>
+    <div style="margin-top:12px;" id="food-chips"></div>
+  </div>
+
+  <!-- GETTING AROUND -->
+  <div class="card">
+    <div class="card-title">🚀 Getting Around</div>
+    <div id="transport-list"></div>
+  </div>
+
+  <!-- TIPS -->
+  <div class="card">
+    <div class="card-title">💡 Handy Tips</div>
+    <div id="tips-list"></div>
+  </div>
+
+  <!-- EMERGENCY -->
+  <div class="card emergency-card">
+    <div class="card-title" style="color:#e94560;">🆘 Emergency Numbers</div>
+    <div class="sos-row"><div class="sos-label">🚨 General Emergency</div><a class="sos-num" href="tel:112">112</a></div>
+    <div class="sos-row"><div class="sos-label">👮 Police</div><a class="sos-num" href="tel:091">091</a></div>
+    <div class="sos-row"><div class="sos-label">🚑 Ambulance</div><a class="sos-num" href="tel:061">061</a></div>
+    <div class="sos-row"><div class="sos-label">🏥 Hospital La Fe</div><a class="sos-map" href="https://maps.google.com/?q=Hospital+Universitario+La+Fe,+Av.+Fernando+Abril+Martorell+106,+Valencia" target="_blank">📍 Map</a></div>
+    <div class="sos-row"><div class="sos-label">🏥 Hospital Doctor Peset</div><a class="sos-map" href="https://maps.google.com/?q=Hospital+Doctor+Peset,+Av.+Gaspar+Aguilar+90,+Valencia" target="_blank">📍 Map</a></div>
+    <div class="sos-row"><div class="sos-label">💬 Your Host</div><a class="sos-num" href="https://wa.me/34600000000" style="font-size:15px;" id="host-contact">WhatsApp</a></div>
+  </div>
+
+</div>
+
+<!-- QR MODAL -->
+<div class="modal-overlay" id="qr-modal" onclick="closeModal()">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-title">📱 Scan to Connect WiFi</div>
+    <div class="modal-sub" id="qr-modal-sub">Point your camera at the code</div>
+    <img id="qr-img" src="" alt="WiFi QR Code">
+    <br>
+    <button class="modal-close" onclick="closeModal()">Close</button>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<div class="footer">ERA Deluxe Apartments · Valencia, Spain · Have a wonderful stay! 🌟</div>
+
+<script>
+// ── APARTMENT DATA ─────────────────────────────────────────────────────────
+var APT_DATA = {
+  piral_1: {
+    name: 'ERA Deluxe Oasis 1', emoji: '🌴',
+    address: "Carrer d'Isaac Peral 19 bajo", hint: 'Ground floor (bajo) · Look for "ERA Deluxe Oasis 1" sign',
+    mapUrl: 'https://maps.google.com/?q=Carrer+Isaac+Peral+19,+Valencia,+Spain',
+    originAddr: "Isaac Peral 19, Valencia, Spain",
+    wifi4g: 'DIGIFIBRA-Nh2R_AUSSEN', wifi5g: 'DIGIFIBRA-PLUS-Nh2R', wifiPass: '3AxuKEb74y',
+    hasSpa: true,
+    photos: {
+      entrance: 'https://era-group.world/era/img/Oasis1.jpg',
+      entrance2: 'https://era-group.world/era/img/Oasis2.jpg',
+      keypad: 'https://era-group.world/era/img/keypad.jpg'
+    }
+  },
+  piral_2: {
+    name: 'ERA Deluxe Oasis 2', emoji: '🌴',
+    address: "Carrer d'Isaac Peral 19 bajo", hint: 'Ground floor (bajo) · Look for "ERA Deluxe Oasis 2" sign',
+    mapUrl: 'https://maps.google.com/?q=Carrer+Isaac+Peral+19,+Valencia,+Spain',
+    originAddr: "Isaac Peral 19, Valencia, Spain",
+    wifi4g: 'DIGIFIBRA-Nh2R_AUSSEN', wifi5g: 'DIGIFIBRA-PLUS-Nh2R', wifiPass: '3AxuKEb74y',
+    hasSpa: true,
+    photos: {
+      entrance: 'https://era-group.world/era/img/Oasis2.jpg',
+      entrance2: 'https://era-group.world/era/img/Oasis1.jpg',
+      keypad: 'https://era-group.world/era/img/keypad.jpg'
+    }
+  },
+  grande: {
+    name: 'ERA Deluxe Grande', emoji: '🏠',
+    address: "Carrer d'Isaac Peral 19 bajo", hint: 'Ground floor (bajo) · Look for "ERA Deluxe" sign',
+    mapUrl: 'https://maps.google.com/?q=Carrer+Isaac+Peral+19,+Valencia,+Spain',
+    originAddr: "Isaac Peral 19, Valencia, Spain",
+    wifi4g: 'DIGIFIBRA-Nh2R_AUSSEN', wifi5g: 'DIGIFIBRA-PLUS-Nh2R', wifiPass: '3AxuKEb74y',
+    hasSpa: true,
+    photos: {
+      entrance: 'https://era-group.world/era/img/Oasis1.jpg',
+      entrance2: 'https://era-group.world/era/img/Oasis2.jpg',
+      keypad: 'https://era-group.world/era/img/keypad.jpg'
+    }
+  },
+  salvador: {
+    name: 'ERA Deluxe Salvador', emoji: '🏡',
+    address: 'Carrer de Felipe Salvador 7, Bajo A Derecha', hint: 'Ground floor, right door · Look for "ERA Deluxe Apartments" sign',
+    mapUrl: 'https://maps.google.com/?q=Calle+Felipe+Salvador+7,+Valencia,+Spain',
+    originAddr: "Felipe Salvador 7, Valencia, Spain",
+    wifi4g: 'DIGIFIBRA-pu43', wifi5g: 'DIGIFIBRA-PLUS-PU43', wifiPass: 'A7AFZSTRkU',
+    hasSpa: false,
+    photos: {
+      entrance: 'https://era-group.world/era/img/Salvador.jpg',
+      entrance2: null,
+      keypad: 'https://era-group.world/era/img/keypad.jpg'
+    }
+  }
+};
+
+// ── CURRENT APT ────────────────────────────────────────────────────────────
+var currentApt = 'piral_1';
+
+// ── ATTRACTIONS ────────────────────────────────────────────────────────────
+var ATTRACTIONS = [
+  { emoji:'🏖️', name:'Nearest Beach', desc:'Golden sand, water sports, and paella restaurants right on the shore.', dist:'~5 min by bike', dest:'Passeig de Neptú, 2, Poblats Marítims, 46011 València', mode:'bicycling' },
+  { emoji:'🏛️', name:'City of Arts & Sciences', desc:"Valencia's futuristic complex — aquarium, opera, planetarium. Unmissable at sunset.", dist:'~15 min by bike', dest:'Ciudad de las Artes y las Ciencias, Valencia', mode:'bicycling' },
+  { emoji:'🌿', name:'Turia Garden', desc:'9 km green park in a former riverbed. Walk, cycle, skate through orange trees.', dist:'~20 min by bike', dest:'Jardines del Turia, Valencia', mode:'bicycling' },
+  { emoji:'⛪', name:'Valencia Cathedral', desc:'Gothic masterpiece. Climb the Micalet tower for panoramic city views.', dist:'~25 min by bike', dest:'Catedral de Valencia', mode:'bicycling' },
+  { emoji:'🐟', name:'Mercado Central', desc:"One of Europe's largest covered markets. Fresh seafood, tapas, local produce.", dist:'~25 min by bike', dest:'Mercado Central, Valencia', mode:'bicycling' },
+  { emoji:'🎨', name:'El Carmen — Old Town', desc:'Medieval streets, street art, cocktail bars, tapas. Best neighbourhood to get lost in.', dist:'~25 min by bike', dest:'Barrio del Carmen, Valencia', mode:'bicycling' },
+  { emoji:'🦁', name:'Bioparc Valencia', desc:'Immersive zoo with African landscapes. No cages — open habitats. Perfect for families.', dist:'~20 min by metro', dest:'Bioparc Valencia', mode:'transit' },
+  { emoji:'🎭', name:'San Nicolás Church', desc:'"Valencian Sistine Chapel" — baroque interior covered in breathtaking frescoes.', dist:'~25 min by bike', dest:'Iglesia de San Nicolás, Valencia', mode:'bicycling' }
+];
+
+// ── TRANSPORT ──────────────────────────────────────────────────────────────
+var TRANSPORT = [
+  {
+    icon:'🚲', name:'Valenbisi — City Bikes',
+    desc:'Best way to see Valencia. €13/week unlimited short trips. Station likely near your apartment.',
+    links:[{label:'🌐 Website', url:'https://www.valenbisi.es/en/', cls:'web'},{label:'📱 iOS App', url:'https://apps.apple.com/es/app/valenbisi-official/id1608332826', cls:'ios'},{label:'📱 Android', url:'https://play.google.com/store/apps/details?id=de.nextbike', cls:'android'}]
+  },
+  {
+    icon:'🚇', name:'Metro Valencia',
+    desc:'Clean and fast. Line 4 tram runs along the coast to the beach. Day pass €4.',
+    links:[{label:'🚇 Station Maritim →', url:'https://www.google.com/maps/dir/?api=1&destination=Estació+Marítim-Serreria,+Valencia&travelmode=walking', cls:'web'},{label:'📱 iOS App', url:'https://apps.apple.com/es/app/metrovalencia-oficial/id1321451717', cls:'ios'},{label:'📱 Android', url:'https://play.google.com/store/apps/details?id=com.fgv.metrovalencia', cls:'android'}]
+  },
+  {
+    icon:'🚌', name:'EMT Bus Valencia',
+    desc:'Extensive city bus network. Night buses run after midnight. €1.50/ride.',
+    links:[{label:'🌐 Website', url:'https://www.emtvalencia.es/wp/en/', cls:'web'},{label:'📱 iOS App', url:'https://apps.apple.com/us/app/emt-valencia/id563794473', cls:'ios'},{label:'📱 Android', url:'https://play.google.com/store/apps/details?id=es.emtvalencia.emt', cls:'android'}]
+  },
+  {
+    icon:'🚕', name:'Bolt / Cabify',
+    desc:'Ride-hailing apps work great in Valencia. Reasonably priced, especially late night.',
+    links:[{label:'📱 Bolt iOS', url:'https://apps.apple.com/app/bolt-request-a-ride/id675033630', cls:'ios'},{label:'📱 Bolt Android', url:'https://play.google.com/store/apps/details?id=ee.mtakso.client', cls:'android'},{label:'📱 Cabify iOS', url:'https://apps.apple.com/app/cabify/id476087442', cls:'ios'}]
+  },
+  {
+    icon:'✈️', name:'Airport Transfer',
+    desc:'Metro lines 3 & 5 from city centre (~25 min, €3.90). Taxi is ~€20 flat.',
+    links:[{label:'🚇 Station Maritim →', url:'https://www.google.com/maps/dir/?api=1&destination=Estació+Marítim-Serreria,+Valencia&travelmode=walking', cls:'web'},{label:'📱 iOS App', url:'https://apps.apple.com/es/app/metrovalencia-oficial/id1321451717', cls:'ios'},{label:'📱 Android', url:'https://play.google.com/store/apps/details?id=com.fgv.metrovalencia', cls:'android'}]
+  }
+];
+
+// ── URL PARAMS ─────────────────────────────────────────────────────────────
+function getParam(n) { return new URLSearchParams(window.location.search).get(n) || ''; }
+
+function parseCheckinDate(iso, defaultTime) {
+  if (!iso) return null;
+  var clean = iso.replace(' ', 'T');
+  var hasTime = /T\d{2}:\d{2}/.test(clean);
+  if (!hasTime) clean = clean.slice(0,10) + 'T' + defaultTime + ':00';
+  return new Date(clean);
+}
+
+function formatStayDate(d) {
+  if (!d) return '—';
+  var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return days[d.getDay()] + ', ' + d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear()
+    + ' · ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+}
+
+// ── COPY ───────────────────────────────────────────────────────────────────
+var codeValue = '';
+function copyCode() {
+  navigator.clipboard.writeText(codeValue).then(function() {
+    var btn = document.getElementById('copy-code-btn');
+    btn.textContent = '✅ Copied!'; btn.classList.add('copied');
+    setTimeout(function(){ btn.textContent = '📋 Copy code'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+function copyText(elId, btn) {
+  var val = document.getElementById(elId).textContent;
+  navigator.clipboard.writeText(val).then(function() {
+    var orig = btn.textContent; btn.textContent = '✅'; btn.classList.add('copied');
+    setTimeout(function(){ btn.textContent = orig; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// ── QR MODAL ───────────────────────────────────────────────────────────────
+function wifiQrData(ssid, pass) {
+  var esc = function(s){ return s.replace(/[;,\\"]/g, function(c){ return '\\'+c; }); };
+  return 'WIFI:T:WPA;S:'+esc(ssid)+';P:'+esc(pass)+';;';
+}
+function openWifiQr(band) {
+  var data = APT_DATA[currentApt];
+  var ssid = band === '5g' ? data.wifi5g : data.wifi4g;
+  var qrData = wifiQrData(ssid, data.wifiPass);
+  document.getElementById('qr-img').src = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + encodeURIComponent(qrData);
+  document.getElementById('qr-modal-sub').textContent = ssid + ' · ' + data.wifiPass;
+  document.getElementById('qr-modal').classList.add('open');
+}
+function closeModal() { document.getElementById('qr-modal').classList.remove('open'); }
+
+// ── LIGHTBOX ───────────────────────────────────────────────────────────────
+function openLightbox(card) {
+  var img = card.querySelector('img');
+  if (!img) return;
+  document.getElementById('lightbox-img').src = img.src;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
+
+// ── PHOTOS ─────────────────────────────────────────────────────────────────
+function setPhoto(cardId, src, label) {
+  if (!src) return;
+  var card = document.getElementById(cardId);
+  if (!card) return;
+  var img = document.createElement('img');
+  img.src = src; img.alt = label;
+  img.onerror = function(){ img.remove(); };
+  card.innerHTML = '';
+  card.appendChild(img);
+  var lbl = document.createElement('div');
+  lbl.className = 'photo-card-label'; lbl.textContent = label;
+  card.appendChild(lbl);
+}
+
+// ── ATTRACTIONS ────────────────────────────────────────────────────────────
+function buildAttractions(originAddr) {
+  var html = '';
+  ATTRACTIONS.forEach(function(a) {
+    var mapsUrl = 'https://www.google.com/maps/dir/?api=1&origin=' + encodeURIComponent(originAddr) + '&destination=' + encodeURIComponent(a.dest) + '&travelmode=' + a.mode;
+    html += '<div class="place-item">';
+    html += '<div class="place-emoji">'+a.emoji+'</div>';
+    html += '<div><div class="place-name">'+a.name+'</div>';
+    html += '<div class="place-desc">'+a.desc+'</div>';
+    html += '<a class="place-dist" href="'+mapsUrl+'" target="_blank" rel="noopener">🗺 '+a.dist+'</a>';
+    html += '</div></div>';
+  });
+  document.getElementById('attractions-list').innerHTML = html;
+}
+
+// ── FOOD CHIPS ─────────────────────────────────────────────────────────────
+function buildFoodChips(originAddr) {
+  var chips = [
+    { label: '🥐 Bakery nearby', url: 'https://maps.google.com/?q=panadería+bakery+near+' + encodeURIComponent(originAddr) },
+    { label: '🛒 Mercadona', url: 'https://maps.google.com/?q=Mercadona+near+' + encodeURIComponent(originAddr) },
+    { label: '🛒 Charter (open weekends)', url: 'https://www.google.com/maps/dir/?api=1&destination=Charter+Carrer+d\'Isaac+Peral+Valencia&travelmode=walking' },
+    { label: '🏪 Carrefour Mini 24/7', url: 'https://www.google.com/maps/dir/?api=1&destination=Carrefour+Avenida+del+Puerto+Valencia&travelmode=walking' },
+    { label: '🛒 Consum', url: 'https://maps.google.com/?q=Consum+supermercado+near+' + encodeURIComponent(originAddr) },
+    { label: '🛒 Lidl', url: 'https://maps.google.com/?q=Lidl+near+' + encodeURIComponent(originAddr) },
+    { label: '🐚 Fresh seafood', url: null },
+    { label: '🍦 Gelato', url: null },
+    { label: '☕ Coffee €1.20', url: null }
+  ];
+  var html = '';
+  chips.forEach(function(c) {
+    if (c.url) {
+      html += '<a class="food-chip food-chip-link" href="'+c.url+'" target="_blank" rel="noopener">'+c.label+'</a>';
+    } else {
+      html += '<span class="food-chip food-chip-plain">'+c.label+'</span>';
+    }
+  });
+  document.getElementById('food-chips').innerHTML = html;
+}
+
+// ── TRANSPORT ──────────────────────────────────────────────────────────────
+function buildTransport() {
+  var html = '';
+  TRANSPORT.forEach(function(t) {
+    html += '<div class="transport-item">';
+    html += '<div class="transport-icon">'+t.icon+'</div>';
+    html += '<div><div class="transport-name">'+t.name+'</div>';
+    html += '<div class="transport-desc">'+t.desc+'</div>';
+    if (t.links && t.links.length) {
+      html += '<div class="app-badges">';
+      t.links.forEach(function(l){ html += '<a class="app-badge '+l.cls+'" href="'+l.url+'" target="_blank" rel="noopener">'+l.label+'</a>'; });
+      html += '</div>';
+    }
+    html += '</div></div>';
+  });
+  document.getElementById('transport-list').innerHTML = html;
+}
+
+// ── TIPS ───────────────────────────────────────────────────────────────────
+function buildTips(originAddr) {
+  var tips = [
+    { icon:'🌡️', html:'<strong>Weather:</strong> Valencia is sunny almost year-round. Bring sunscreen. Sea stays warm until November.' },
+    { icon:'💶', html:'<strong>Cash & Exchange:</strong> Mostly card-friendly. For cash: <a class="tip-link" href="https://maps.google.com/?q=currency+exchange+near+'+encodeURIComponent(originAddr)+'" target="_blank">nearest exchange →</a>' },
+    { icon:'🕐', html:'<strong>Local time:</strong> Lunch 14:00–16:00, dinner from 21:00. Arriving at a restaurant at 7pm feels early!' },
+    { icon:'💊', html:'<strong>Pharmacy (Farmacia):</strong> Green cross sign. <a class="tip-link" href="https://maps.google.com/?q=farmacia+near+'+encodeURIComponent(originAddr)+'" target="_blank">Nearest pharmacy →</a> · Night duty: <a class="tip-link" href="https://www.farmaciadeguardia.com" target="_blank">farmaciadeguardia.com</a>' },
+    { icon:'🔌', html:'<strong>Power:</strong> EU Type C/F plugs, 220V. Bring an adapter if from UK or US.' },
+    { icon:'🗣️', html:'<strong>Language:</strong> Spanish + Valencian. English in tourist areas. <em>"Hola, ¿hablas inglés?"</em> goes a long way!' },
+    { icon:'🧴', html:'<strong>In your apartment:</strong> Towels, linen, kitchen equipment and basic toiletries provided.' }
+  ];
+  var html = '';
+  tips.forEach(function(t){ html += '<div class="tip-row"><div class="tip-icon">'+t.icon+'</div><div>'+t.html+'</div></div>'; });
+  document.getElementById('tips-list').innerHTML = html;
+}
+
+// ── WEATHER ────────────────────────────────────────────────────────────────
+var WEATHER_ICONS = {
+  'sunny':'☀️','clear':'✨','overcast':'☁️','cloudy':'⛅','partly cloudy':'⛅',
+  'mist':'🌫️','fog':'🌫️','rain':'🌧️','drizzle':'🌦️','shower':'🌧️',
+  'thundery':'⛈️','snow':'❄️','blizzard':'🌨️','sleet':'🌨️','ice':'🧊',
+  'wind':'💨','breeze':'💨'
+};
+function weatherIcon(desc) {
+  var d = (desc||'').toLowerCase();
+  for (var k in WEATHER_ICONS) { if (d.indexOf(k) >= 0) return WEATHER_ICONS[k]; }
+  return '🌤️';
+}
+var WMO_ICONS = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',71:'❄️',73:'❄️',75:'❄️',80:'🌦️',81:'🌦️',82:'🌧️',95:'⛈️',96:'⛈️',99:'⛈️'};
+var DAY_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+function wmoIcon(code){ return WMO_ICONS[code] || '🌡️'; }
+
+function loadWeather() {
+  var wttrUrl = 'https://wttr.in/Valencia,Spain?format=j1';
+  var openMeteoUrl = 'https://api.open-meteo.com/v1/forecast?latitude=39.47&longitude=-0.376&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=Europe%2FMadrid&forecast_days=7';
+
+  Promise.all([
+    fetch(wttrUrl).then(function(r){ return r.json(); }),
+    fetch(openMeteoUrl).then(function(r){ return r.json(); })
+  ]).then(function(results) {
+    var data = results[0];
+    var forecast = results[1];
+    var cur = data.current_condition[0];
+    var today = data.weather[0];
+    var tomorrow = data.weather[1];
+    var now = new Date();
+    var curHour = now.getHours();
+
+    var icon = weatherIcon(cur.weatherDesc[0].value);
+    var html = '<div class="weather-current">';
+    html += '<div style="font-size:52px;line-height:1">'+icon+'</div>';
+    html += '<div><div class="weather-temp">'+cur.temp_C+'°</div>';
+    html += '<div class="weather-desc">'+cur.weatherDesc[0].value+'</div>';
+    html += '<div class="weather-feels">Feels like '+cur.FeelsLikeC+'° · 💧'+cur.humidity+'% · 💨'+cur.windspeedKmph+' km/h</div></div>';
+    html += '</div>';
+
+    // Hourly (next 8 slots)
+    var hourly = today.hourly.filter(function(h){ return parseInt(h.time)/100 >= curHour; });
+    if (hourly.length < 4 && tomorrow) hourly = hourly.concat(tomorrow.hourly.slice(0, 4-hourly.length));
+    html += '<div class="weather-hourly">';
+    hourly.slice(0,8).forEach(function(h) {
+      var hh = String(parseInt(h.time)/100).padStart(2,'0')+':00';
+      html += '<div class="weather-hour"><div class="weather-hour-time">'+hh+'</div>';
+      html += '<div class="weather-hour-icon">'+weatherIcon(h.weatherDesc[0].value)+'</div>';
+      html += '<div class="weather-hour-temp">'+h.tempC+'°</div></div>';
+    });
+    html += '</div>';
+
+    // 7-day forecast from Open-Meteo (skip today = index 0)
+    if (forecast && forecast.daily) {
+      html += '<div class="weather-week">';
+      var dates = forecast.daily.time;
+      var maxTemps = forecast.daily.temperature_2m_max;
+      var minTemps = forecast.daily.temperature_2m_min;
+      var codes = forecast.daily.weathercode;
+      for (var i = 1; i < dates.length; i++) {
+        var d = new Date(dates[i]);
+        var dayName = i === 1 ? 'Tomorrow' : DAY_NAMES[d.getDay()];
+        html += '<div class="weather-day-row">';
+        html += '<div class="weather-day-name">'+dayName+'</div>';
+        html += '<div class="weather-day-icon">'+wmoIcon(codes[i])+'</div>';
+        html += '<div class="weather-day-range">'+Math.round(minTemps[i])+'° — '+Math.round(maxTemps[i])+'°</div>';
+        html += '</div>';
+      }
+      html += '</div>';
+    }
+
+    document.getElementById('weather-content').innerHTML = html;
+  }).catch(function(){ document.getElementById('weather-content').innerHTML = '<div class="weather-loading">☀️ Valencia — sunny & warm</div>'; });
+}
+
+// ── INIT ───────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', function() {
+  var apt = getParam('apt') || 'piral_1';
+  var code = getParam('code');
+  var ci = getParam('ci');
+  var co = getParam('co');
+  currentApt = apt;
+
+  var data = APT_DATA[apt] || APT_DATA['piral_1'];
+
+  var isAdmin = getParam('admin') === '1';
+
+  // Access control: only show portal during stay window (bypass for admin preview)
+  if (ci && co && !isAdmin) {
+    var now = new Date();
+    var checkinMs = parseCheckinDate(ci, '15:00').getTime();
+    var checkoutMs = parseCheckinDate(co, '11:00').getTime();
+    if (now < checkinMs) {
+      var checkinFmt = parseCheckinDate(ci, '15:00').toLocaleString('en-GB', {day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'});
+      document.body.innerHTML = '<div class="access-screen"><div class="access-icon">🔒</div><div class="access-title">Portal not yet available</div><div class="access-sub">Your guest guide will be accessible from<br><strong style="color:#fff">'+checkinFmt+'</strong><br>See you soon!</div></div>';
+      return;
+    }
+    if (now > checkoutMs) {
+      document.body.innerHTML = '<div class="access-screen"><div class="access-icon">🏠</div><div class="access-title">Your stay has ended</div><div class="access-sub">We hope you enjoyed Valencia!<br>Thank you for choosing ERA Deluxe Apartments.</div></div>';
+      return;
+    }
+  }
+
+  document.getElementById('apt-name').textContent = data.emoji + ' ' + data.name;
+
+  codeValue = code || '—';
+  if (code) {
+    document.getElementById('code-display').innerHTML = '<span>' + code + '</span><span class="code-hash">#</span>';
+  }
+
+  var ciDate = parseCheckinDate(ci, '15:00');
+  var coDate = parseCheckinDate(co, '11:00');
+  document.getElementById('checkin-display').textContent = formatStayDate(ciDate);
+  document.getElementById('checkout-display').textContent = formatStayDate(coDate);
+
+  document.getElementById('wifi4g').textContent = data.wifi4g;
+  document.getElementById('wifi5g').textContent = data.wifi5g;
+  document.getElementById('wifi-pass').textContent = data.wifiPass;
+
+  document.getElementById('address-text').textContent = data.address;
+  document.getElementById('address-hint').textContent = data.hint;
+  document.getElementById('map-link').href = data.mapUrl;
+
+  if (data.hasSpa) document.getElementById('spa-card').classList.remove('hidden');
+
+  if (data.photos) {
+    setPhoto('photo-entrance', data.photos.entrance, 'Main Entrance');
+    setPhoto('photo-keypad', data.photos.keypad, 'Door Keypad');
+    setPhoto('photo-entrance2', data.photos.entrance2, 'Entrance View');
+    if (!data.photos.entrance2) document.getElementById('photo-entrance2').classList.add('hidden');
+  }
+
+  buildAttractions(data.originAddr);
+  buildFoodChips(data.originAddr);
+  buildTransport();
+  buildTips(data.originAddr);
+  loadWeather();
+
+  // Admin preview button
+  if (isAdmin) {
+    var guestUrl = location.href.replace(/[?&]admin=1/, '').replace(/&&/, '&').replace(/\?&/, '?');
+    var btn = document.createElement('div');
+    btn.style.cssText = 'text-align:center;padding:24px 16px 8px';
+    btn.innerHTML = '<a href="'+guestUrl+'" target="_blank" style="display:inline-block;background:rgba(255,255,255,0.15);color:#fff;font-size:13px;font-weight:600;padding:12px 24px;border-radius:50px;text-decoration:none;border:1px solid rgba(255,255,255,0.3)">👁 Preview as Guest</a>';
+    document.querySelector('.container').appendChild(btn);
+  }
+});
+</script>
+</body>
+</html>

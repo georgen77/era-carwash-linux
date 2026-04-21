@@ -1,0 +1,11 @@
+﻿.env
+node_modules/
+node-v24.14.1-x64.msi
+Backups/
+*.log
+seen_bookings.json
+bot (1).js
+bot 27.js
+bot 28.js
+bot 29.js
+bot 34.js

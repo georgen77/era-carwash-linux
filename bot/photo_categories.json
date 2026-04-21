@@ -1,0 +1,27 @@
+[
+  {
+    "id": "apartments",
+    "name": "Апартаменты",
+    "emoji": "🏠"
+  },
+  {
+    "id": "linen",
+    "name": "Бельё",
+    "emoji": "🧺"
+  },
+  {
+    "id": "repair",
+    "name": "Ремонт",
+    "emoji": "🔧"
+  },
+  {
+    "id": "documents",
+    "name": "Документы",
+    "emoji": "📄"
+  },
+  {
+    "id": "receipts",
+    "name": "Чеки",
+    "emoji": "🧾"
+  }
+]
