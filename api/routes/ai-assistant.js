@@ -13,7 +13,7 @@ const CAR_WASHES = [
 
 const LANG_NAMES = { uk: 'Ukrainian', ru: 'Russian', en: 'English' };
 
-async function callGemini(messages, model = 'gemini-1.5-flash', temperature = 0.3) {
+async function callGemini(messages, model = 'gemini-2.5-flash', temperature = 0.3) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) throw new Error('GEMINI_API_KEY not configured');
 
@@ -67,7 +67,7 @@ router.post('/ai-assistant', async (req, res) => {
     if (systemOverride && jsonMode) {
       const answer = await callGemini([
         { role: 'user', content: `${systemOverride}\n\nUser input: ${query}` }
-      ], 'gemini-1.5-flash', 0.1);
+      ], 'gemini-2.5-flash', 0.1);
       return res.json({ success: true, answer });
     }
 
@@ -119,7 +119,7 @@ Respond ONLY with valid JSON:
         { role: 'user', content: systemPrompt },
         ...historyMessages,
         { role: 'user', content: query },
-      ], 'gemini-1.5-flash', 0.1);
+      ], 'gemini-2.5-flash', 0.1);
       const cleaned = raw.replace(/```[a-z]*\n?/gi, '').replace(/```/g, '').trim();
       intent = JSON.parse(cleaned);
     } catch {
@@ -242,7 +242,7 @@ Respond ONLY with valid JSON:
     const answerSystemPrompt = `You are a helpful assistant for a car wash business. Answer in ${responseLang}. Be concise and clear. Format numbers nicely. Use the data provided.`;
     const answer = await callGemini([
       { role: 'user', content: `${answerSystemPrompt}\n\nUser question: ${query}\n\nData:\n${dataSummary}` }
-    ], 'gemini-1.5-flash', 0.3);
+    ], 'gemini-2.5-flash', 0.3);
 
     return res.json({ success: true, answer, intent, dataSummary });
   } catch (error) {
