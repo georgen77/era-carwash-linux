@@ -1,0 +1,212 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 20% 97%;
+    --foreground: 220 30% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 30% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 30% 10%;
+
+    --primary: 215 80% 50%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 15% 92%;
+    --secondary-foreground: 220 30% 15%;
+
+    --muted: 220 15% 92%;
+    --muted-foreground: 220 10% 45%;
+
+    --accent: 160 60% 45%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 15% 88%;
+    --input: 220 15% 88%;
+    --ring: 215 80% 50%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    --success: 160 60% 45%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    --gold: 43 74% 49%;
+    --gold-foreground: 43 20% 10%;
+    --gold-muted: 43 40% 90%;
+  }
+
+  .dark {
+    --background: 220 25% 8%;
+    --foreground: 220 15% 90%;
+
+    --card: 220 25% 12%;
+    --card-foreground: 220 15% 90%;
+
+    --popover: 220 25% 12%;
+    --popover-foreground: 220 15% 90%;
+
+    --primary: 215 80% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 20% 18%;
+    --secondary-foreground: 220 15% 90%;
+
+    --muted: 220 20% 18%;
+    --muted-foreground: 220 10% 55%;
+
+    --accent: 160 60% 45%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 220 20% 20%;
+    --input: 220 20% 20%;
+    --ring: 215 80% 55%;
+
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    --success: 160 60% 45%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    --gold: 43 74% 55%;
+    --gold-foreground: 43 20% 95%;
+    --gold-muted: 43 30% 20%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+/* City themes — Odessa: warm sea blues & golden tones */
+.theme-odessa {
+  --background: 210 40% 8%;
+  --foreground: 40 80% 92%;
+  --card: 210 35% 12%;
+  --card-foreground: 40 80% 92%;
+  --popover: 210 35% 12%;
+  --popover-foreground: 40 80% 92%;
+  --primary: 195 80% 55%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 210 30% 18%;
+  --secondary-foreground: 40 70% 85%;
+  --muted: 210 30% 18%;
+  --muted-foreground: 210 20% 55%;
+  --accent: 43 90% 55%;
+  --accent-foreground: 43 20% 10%;
+  --border: 210 25% 22%;
+  --input: 210 25% 22%;
+  --ring: 195 80% 55%;
+  --gold: 43 90% 58%;
+  --gold-foreground: 43 20% 10%;
+}
+
+/* Heidelberg: warm amber & burgundy medieval tones */
+.theme-heidelberg {
+  --background: 25 30% 7%;
+  --foreground: 35 60% 90%;
+  --card: 25 25% 11%;
+  --card-foreground: 35 60% 90%;
+  --popover: 25 25% 11%;
+  --popover-foreground: 35 60% 90%;
+  --primary: 22 85% 58%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 25 20% 17%;
+  --secondary-foreground: 35 50% 80%;
+  --muted: 25 20% 17%;
+  --muted-foreground: 25 15% 55%;
+  --accent: 350 70% 55%;
+  --accent-foreground: 0 0% 100%;
+  --border: 25 22% 20%;
+  --input: 25 22% 20%;
+  --ring: 22 85% 58%;
+  --gold: 38 85% 55%;
+  --gold-foreground: 38 20% 10%;
+}
+
+/* Valencia: vibrant Mediterranean orange & teal */
+.theme-valencia {
+  --background: 30 35% 7%;
+  --foreground: 48 80% 92%;
+  --card: 30 30% 11%;
+  --card-foreground: 48 80% 92%;
+  --popover: 30 30% 11%;
+  --popover-foreground: 48 80% 92%;
+  --primary: 28 95% 58%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 30 25% 17%;
+  --secondary-foreground: 48 70% 85%;
+  --muted: 30 25% 17%;
+  --muted-foreground: 30 15% 55%;
+  --accent: 175 65% 45%;
+  --accent-foreground: 0 0% 100%;
+  --border: 30 25% 20%;
+  --input: 30 25% 20%;
+  --ring: 28 95% 58%;
+  --gold: 42 95% 55%;
+  --gold-foreground: 42 20% 10%;
+}
+
+/* Status cell colors for technical state & analytics tables (matching Bootstrap table-* colors) */
+@layer utilities {
+  .cell-success {
+    background-color: hsl(var(--success) / 0.15);
+    color: hsl(var(--success));
+  }
+  .cell-danger {
+    background-color: hsl(var(--destructive) / 0.12);
+    color: hsl(var(--destructive));
+  }
+  .cell-warning {
+    background-color: hsl(var(--warning) / 0.15);
+    color: hsl(var(--warning));
+  }
+  .cell-secondary {
+    background-color: hsl(var(--muted) / 0.5);
+    color: hsl(var(--muted-foreground));
+  }
+  .dark .cell-success {
+    background-color: hsl(var(--success) / 0.2);
+  }
+  .dark .cell-danger {
+    background-color: hsl(var(--destructive) / 0.2);
+  }
+  .dark .cell-warning {
+    background-color: hsl(var(--warning) / 0.2);
+  }
+}

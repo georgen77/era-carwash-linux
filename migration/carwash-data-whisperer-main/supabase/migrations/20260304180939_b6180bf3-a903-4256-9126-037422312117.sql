@@ -1,0 +1,1 @@
+ALTER TABLE public.work_journal_entries ADD COLUMN IF NOT EXISTS image TEXT;

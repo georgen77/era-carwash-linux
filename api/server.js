@@ -41,8 +41,17 @@ app.use("/api", require("./routes/scan-linen"));
 app.use("/api", require("./routes/transcribe-audio"));
 app.use("/api", require("./routes/smart-voice-input"));
 app.use("/api", require("./routes/sync-ical"));
-app.use("/api", require("./routes/bot-api"));
+try { app.use("/api", require("./routes/bot-api")); } catch(e) { console.warn("[WARN] bot-api skipped:", e.message); }
 app.use("/api", require("./routes/telegram-webhook"));
+
+// === CARWASH TRACKING ROUTES ===
+app.use("/api", require("./routes/scrape-carwash"));
+app.use("/api", require("./routes/manage-users"));
+app.use("/api", require("./routes/ai-assistant"));
+app.use("/api", require("./routes/cw-send-telegram"));
+app.use("/api", require("./routes/telegram-bot-webhook"));
+app.use("/api", require("./routes/whatsapp-daily-report"));
+app.use("/api", require("./routes/admin-users"));
 
 // CRON: еженедельное напоминание (понедельник 9:00 Valencia = UTC+2 → 07:00 UTC)
 cron.schedule("0 7 * * 1", async () => {
