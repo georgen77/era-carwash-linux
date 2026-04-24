@@ -46,7 +46,7 @@ const CLEANER_LOOKUP_CANDIDATES = {
   "Марьяна": ["Марьяна", "Maryana", "Mariana"],
 };
 
-const STANDARD_LINEN= [
+const STANDARD_LINEN: Array<{ item_type: string; quantity: number }> = [
   { item_type: "sheets",        quantity: 1 },
   { item_type: "duvet_covers",  quantity: 1 },
   { item_type: "pillowcases",   quantity: 2 },
@@ -66,10 +66,10 @@ function getAdminChatIds() {
     process.env.IRINA_TELEGRAM_CHAT_ID,
     process.env.EMMA_TELEGRAM_CHAT_ID,
     process.env.OWNER_TELEGRAM_CHAT_ID,
-  ].filter(Boolean);
+  ].filter(Boolean)[];
 }
 
-async function sendTg(token = "Markdown", replyMarkup) {
+async function sendTg(token, chatId, text, parseMode = "Markdown", replyMarkup) {
   try {
     const body = { chat_id: String(chatId), text, parse_mode: parseMode };
     if (replyMarkup) body.reply_markup = replyMarkup;
@@ -148,7 +148,7 @@ function assignmentPriority(row) {
   return score;
 }
 
-function dedupeAssignments(rows) {
+function dedupeAssignments(rows: any[]) {
   const grouped = new Map();
 
   for (const row of rows ?? []) {
@@ -164,7 +164,7 @@ function dedupeAssignments(rows) {
   return Array.from(grouped.values());
 }
 
-function pickBestAssignment(rows) {
+function pickBestAssignment(rows: any[]) {
   const deduped = dedupeAssignments(rows ?? []);
   if (deduped.length === 0) return null;
   return deduped.sort((a, b) => assignmentPriority(b) - assignmentPriority(a))[0] ?? null;
@@ -189,8 +189,8 @@ function getDateRange(row) {
 }
 
 function sameGrandeSlot(
-  a,
-  b,
+  a: { cleaning_date?: string | null; checkout_date?: string | null; checkin_date?: string | null },
+  b: { cleaning_date?: string | null; checkout_date?: string | null; checkin_date?: string | null },
 ) {
   if (a.checkin_date && a.checkout_date && b.checkin_date && b.checkout_date) {
     return a.checkin_date === b.checkin_date && a.checkout_date === b.checkout_date;
@@ -200,19 +200,19 @@ function sameGrandeSlot(
 }
 
 function rangesOverlap(
-  a: { start; end },
-  b: { start; end },
+  a: { start: string | null; end: string | null },
+  b: { start: string | null; end: string | null },
 ) {
   if (!a.start || !a.end || !b.start || !b.end) return false;
   return a.start <= b.end && b.start <= a.end;
 }
 
 function suppressGrandeOverlaps<T extends {
-  apartment?;
-  cleaning_date?;
-  checkout_date?;
-  checkin_date?;
-}>(rows) {
+  apartment?: string | null;
+  cleaning_date?: string | null;
+  checkout_date?: string | null;
+  checkin_date?: string | null;
+}>(rows: T[]) {
   const grandeRows = rows.filter((row) => row.apartment === "grande");
   if (grandeRows.length === 0) return rows;
 
@@ -235,7 +235,7 @@ async function lookupCleanerChatId(supabase, cleanerName) {
 
   if (error) throw error;
 
-  const cleanerHit = (data ?? []).find((row => normalizeTelegramId(row?.telegram_id));
+  const cleanerHit = (data ?? []).find((row) => normalizeTelegramId(row?.telegram_id));
   if (cleanerHit) return normalizeTelegramId(cleanerHit.telegram_id);
 
   const { data: assignmentHits, error: assignmentError } = await supabase
@@ -249,7 +249,7 @@ async function lookupCleanerChatId(supabase, cleanerName) {
 
   if (assignmentError) throw assignmentError;
 
-  const assignmentHit = (assignmentHits ?? []).find((row => normalizeTelegramId(row?.cleaner_telegram_id));
+  const assignmentHit = (assignmentHits ?? []).find((row) => normalizeTelegramId(row?.cleaner_telegram_id));
   if (assignmentHit) return normalizeTelegramId(assignmentHit.cleaner_telegram_id);
 
   const { data: messageHits, error: messageError } = await supabase
@@ -261,7 +261,7 @@ async function lookupCleanerChatId(supabase, cleanerName) {
 
   if (messageError) throw messageError;
 
-  const messageHit = (messageHits ?? []).find((row => normalizeTelegramId(row?.chat_id));
+  const messageHit = (messageHits ?? []).find((row) => normalizeTelegramId(row?.chat_id));
   return normalizeTelegramId(messageHit?.chat_id);
 }
 
@@ -293,8 +293,8 @@ async function getEquivalentAssignments(supabase, assignment) {
 }
 
 async function findAssignmentRecord(
-  supabase
-  refs: { assignment_id; schedule_id; id },
+  supabase,
+  refs: { assignment_id?: string; schedule_id?: string; id?: string },
 ) {
   const directId = refs.assignment_id ?? refs.id ?? null;
   const scheduleRef = refs.schedule_id ?? refs.id ?? null;
@@ -363,7 +363,8 @@ async function findAssignmentRecord(
   return null;
 }
 
-serve(async (req: Request) => {
+router.post("/bot-api", async (req, res) => {
+  try {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -446,10 +447,10 @@ serve(async (req: Request) => {
           return json({ success: false, already_confirmed: true });
         }
 
-        const items = Array.isArray(pending.items) ? pending.items : [];
-        const inserted = [];
+        const items: any[] = Array.isArray(pending.items) ? pending.items : [];
+        const inserted: any[] = [];
 
-        const fixLocation = (loc => {
+        const fixLocation = (loc) => {
           if (!loc) return null;
           if (loc === "piral") return "piral_1";
           if (loc === "dirty_linen") return "dirty_linen_piral";
@@ -555,10 +556,10 @@ serve(async (req: Request) => {
         const cleanedAssignments = dedupeAssignments(allAssignments ?? []);
         const matchedAssignmentIds = new Set();
 
-        const scheduleRows = (schedules ?? []).map((s => {
+        const scheduleRows = (schedules ?? []).map((s) => {
           const effectiveDate = getEffectiveDate(s);
 
-          const matched = cleanedAssignments.filter((a =>
+          const matched = cleanedAssignments.filter((a) =>
             (a.schedule_id && a.schedule_id === s.id) ||
             (!a.schedule_id && a.apartment === s.apartment && a.cleaning_date === effectiveDate)
           );
@@ -581,14 +582,14 @@ serve(async (req: Request) => {
         });
 
         const manualRows = cleanedAssignments
-          .filter((assignment => !matchedAssignmentIds.has(assignment.id))
-          .map((assignment => ({
+          .filter((assignment) => !matchedAssignmentIds.has(assignment.id))
+          .map((assignment) => ({
             id: assignment.id,
-            schedule_id
+            schedule_id,
             assignment_id: assignment.id,
             slot_id: assignment.id,
             apartment: assignment.apartment,
-            checkin_date
+            checkin_date,
             checkout_date: assignment.cleaning_date,
             cleaning_date: assignment.cleaning_date,
             guests_count: assignment.next_guests != null ? String(assignment.next_guests) : null,
@@ -603,7 +604,7 @@ serve(async (req: Request) => {
             registered_at: assignment.registered_at ?? null,
           }));
 
-        const sortedData = suppressGrandeOverlaps([...scheduleRows, ...manualRows]).sort((a => {
+        const sortedData = suppressGrandeOverlaps([...scheduleRows, ...manualRows]).sort((a, b) => {
           const aDate = getEffectiveDate(a) ?? "";
           const bDate = getEffectiveDate(b) ?? "";
           if (aDate !== bDate) return aDate.localeCompare(bDate);
@@ -625,14 +626,14 @@ serve(async (req: Request) => {
           salvador: ["сальвадор", "salvador"],
         };
 
-        const enrichedSchedule = sortedData.map((slot => {
+        const enrichedSchedule = sortedData.map((slot) => {
           const keywords = aptKw[slot.apartment] || [];
           const incomeAmount = (allIncomes ?? [])
-            .filter((t => {
+            .filter((t) => {
               const text = `${t.description || ""} ${t.location || ""}`.toLowerCase();
-              return keywords.some((kw => text.includes(kw));
+              return keywords.some((kw) => text.includes(kw));
             })
-            .reduce((s => s + Number(t.amount), 0);
+            .reduce((s, t) => s + Number(t.amount), 0);
           return { ...slot, income_amount: incomeAmount };
         });
 
@@ -774,7 +775,7 @@ serve(async (req: Request) => {
           const cleaning_date = existingAssignment.cleaning_date;
           const aptName = APT_DISPLAY[apartment] ?? apartment;
           const relatedAssignments = await getEquivalentAssignments(supabase, existingAssignment);
-          const targetIds = Array.from(new Set((relatedAssignments.length > 0 ? relatedAssignments : [existingAssignment]).map((row => row.id)));
+          const targetIds = Array.from(new Set((relatedAssignments.length > 0 ? relatedAssignments : [existingAssignment]).map((row) => row.id)));
 
           const updatePayload = {
             cleaner_name: normalizedCleanerName,
@@ -889,7 +890,7 @@ serve(async (req: Request) => {
             return json({ success: false, error: error.message }, 500);
           }
 
-          const result = (data ?? []).map((c => ({ name: c.name, telegram_id: c.telegram_id }));
+          const result = (data ?? []).map((c) => ({ name: c.name, telegram_id: c.telegram_id }));
           console.log("[get_cleaners] returning", result.length, "cleaners:", JSON.stringify(result));
           return json({ success: true, data: result });
         } catch (e) {
@@ -940,7 +941,7 @@ serve(async (req: Request) => {
         return json({
           success: true,
           data: dedupeAssignments(data ?? [])
-            .sort((a => String(b.cleaning_date ?? "").localeCompare(String(a.cleaning_date ?? "")))
+            .sort((a, b) => String(b.cleaning_date ?? "").localeCompare(String(a.cleaning_date ?? "")))
             .slice(0, 20),
         });
       }
@@ -1230,7 +1231,7 @@ serve(async (req: Request) => {
         }
 
         const relatedAssignments = await getEquivalentAssignments(supabase, assignment);
-        const targetIds = Array.from(new Set((relatedAssignments.length > 0 ? relatedAssignments : [assignment]).map((row => row.id)));
+        const targetIds = Array.from(new Set((relatedAssignments.length > 0 ? relatedAssignments : [assignment]).map((row) => row.id)));
 
         const previousCleanerName = normalizeCleanerName(assignment.cleaner_name);
         const previousCleanerChatId = normalizeTelegramId(assignment.cleaner_telegram_id);
@@ -1286,7 +1287,7 @@ serve(async (req: Request) => {
         const assignment = await findAssignmentRecord(supabase, { schedule_id, assignment_id, id });
         if (!assignment) return json({ error: "Assignment not found" }, 404);
         const relatedAssignments = await getEquivalentAssignments(supabase, assignment);
-        const targetIds = Array.from(new Set((relatedAssignments.length > 0 ? relatedAssignments : [assignment]).map((row => row.id)));
+        const targetIds = Array.from(new Set((relatedAssignments.length > 0 ? relatedAssignments : [assignment]).map((row) => row.id)));
 
         const normalizedRemovedCleanerName = normalizeCleanerName(assignment.cleaner_name);
         const normalizedRemovedCleanerChatId = normalizeTelegramId(assignment.cleaner_telegram_id);
@@ -1347,13 +1348,13 @@ serve(async (req: Request) => {
 
         let confirmed = 0;
         for (const pending of stale) {
-          const items = Array.isArray(pending.items) ? pending.items : [];
+          const items: any[] = Array.isArray(pending.items) ? pending.items : [];
           if (items.length === 0) continue;
 
           let allOk = true;
           for (const item of items) {
             // Fix invalid location names like "piral" → "piral_1"
-            const fixLocation = (loc => {
+            const fixLocation = (loc) => {
               if (!loc) return null;
               if (loc === "piral") return "piral_1";
               if (loc === "dirty_linen") return "dirty_linen_piral";
@@ -1521,12 +1522,12 @@ serve(async (req: Request) => {
         if (error) throw error;
 
         // Filter for spa=true or crib=true in tasks (supports both object and array formats)
-        const filtered = (data ?? []).filter((row => {
+        const filtered = (data ?? []).filter((row) => {
           const tasks = row.tasks;
           if (!tasks) return false;
           // Array format: [{key:"spa",enabled:true}, ...]
           if (Array.isArray(tasks)) {
-            return tasks.some((t => (t.key === "spa" || t.key === "crib") && t.enabled === true);
+            return tasks.some((t) => (t.key === "spa" || t.key === "crib") && t.enabled === true);
           }
           // Object format: {spa: true, crib: true}
           if (typeof tasks === "object") {
@@ -1582,14 +1583,14 @@ serve(async (req: Request) => {
           salvador: ["сальвадор", "salvador"],
         };
 
-        const enriched = (data ?? []).map((booking => {
+        const enriched = (data ?? []).map((booking) => {
           const keywords = aptKeywords[booking.apartment] || [];
           const matchedIncome = (incomes ?? [])
-            .filter((t => {
+            .filter((t) => {
               const text = `${t.description || ""} ${t.location || ""}`.toLowerCase();
               return keywords.some(kw => text.includes(kw));
             })
-            .reduce((s => s + Number(t.amount), 0);
+            .reduce((s, t) => s + Number(t.amount), 0);
           return { ...booking, income_amount: matchedIncome, has_income: matchedIncome > 0 };
         });
 
@@ -1688,7 +1689,7 @@ serve(async (req: Request) => {
 
         // If tasks is an array, extract guests value for next_guests
         if (Array.isArray(tasks)) {
-          const guestsTask = tasks.find((t => t.key === "guests" && t.value != null);
+          const guestsTask = tasks.find((t) => t.key === "guests" && t.value != null);
           if (guestsTask) {
             updatePayload.next_guests = Number(guestsTask.value);
           }
@@ -1708,8 +1709,8 @@ serve(async (req: Request) => {
           let taskDescriptions = "";
           if (Array.isArray(tasks)) {
             taskDescriptions = tasks
-              .filter((t => t.enabled === true && t.key !== "guests")
-              .map((t => t.name || t.key)
+              .filter((t) => t.enabled === true && t.key !== "guests")
+              .map((t) => t.name || t.key)
               .join(", ");
           } else if (tasks && typeof tasks === "object") {
             taskDescriptions = Object.entries(tasks)
@@ -2002,7 +2003,7 @@ serve(async (req: Request) => {
           .eq("id", id);
 
         // Create corresponding movement
-        const movementIds = [];
+        const movementIds: string[] = [];
         if (items && typeof items === "object") {
           for (const [itemType, qty] of Object.entries(items)) {
             if (Number(qty) > 0) {
@@ -2114,7 +2115,7 @@ serve(async (req: Request) => {
       // ─── LAUNDRY: SEND TO ALBERT ─────────────────────────────────────────
       case "send_to_albert": {
         const { items, from_locations } = body;
-        const movementIds = [];
+        const movementIds: string[] = [];
 
         if (items && typeof items === "object" && Object.keys(items).length > 0) {
           for (const [itemType, qty] of Object.entries(items)) {
@@ -2144,7 +2145,7 @@ serve(async (req: Request) => {
         const { items } = body;
         if (!items || typeof items !== "object") return json({ error: "Missing items" }, 400);
 
-        const movementIds = [];
+        const movementIds: string[] = [];
         const { data: prices } = await supabase
           .from("laundry_prices")
           .select("item_key, price")
@@ -2200,7 +2201,7 @@ serve(async (req: Request) => {
           .not("cleaner_name", "is", null);
 
         if (existing && existing.length > 0) {
-          const taken = existing.find((a => a.cleaner_name && normalizeCleanerName(a.cleaner_name) !== normalizeCleanerName(cName));
+          const taken = existing.find((a) => a.cleaner_name && normalizeCleanerName(a.cleaner_name) !== normalizeCleanerName(cName));
           if (taken) {
             return json({ error: `Этот слот уже занят: ${normalizeCleanerName(taken.cleaner_name)}` }, 409);
           }
@@ -2367,7 +2368,7 @@ serve(async (req: Request) => {
         const { source_locations, delivered_items, picked_items, visited_at, notes } = body;
 
         // 1. Create movements for picked_items (dirty → albert_laundry)
-        const pickedMovementIds = [];
+        const pickedMovementIds: string[] = [];
         if (picked_items && typeof picked_items === "object") {
           for (const [itemType, qty] of Object.entries(picked_items)) {
             if (Number(qty) <= 0) continue;
@@ -2390,7 +2391,7 @@ serve(async (req: Request) => {
         }
 
         // 2. Create movements for delivered_items (albert_laundry → clean_stock)
-        const deliveredMovementIds = [];
+        const deliveredMovementIds: string[] = [];
         if (delivered_items && typeof delivered_items === "object") {
           for (const [itemType, qty] of Object.entries(delivered_items)) {
             if (Number(qty) <= 0) continue;
@@ -2521,9 +2522,9 @@ serve(async (req: Request) => {
 
         if (error) throw error;
 
-        const result = (data ?? []).map((v => {
-          const deliveredCount = Object.values(v.delivered_items ?? {}).reduce((s => s + Number(q), 0);
-          const pickedCount = Object.values(v.picked_items ?? {}).reduce((s => s + Number(q), 0);
+        const result = (data ?? []).map((v) => {
+          const deliveredCount = Object.values(v.delivered_items ?? {}).reduce((s, q) => s + Number(q), 0);
+          const pickedCount = Object.values(v.picked_items ?? {}).reduce((s, q) => s + Number(q), 0);
           return {
             id: v.id,
             visited_at: v.visited_at,
@@ -2559,7 +2560,7 @@ serve(async (req: Request) => {
           .from("laundry_invoices")
           .select("invoice_amount");
 
-        const total_invoiced = (invoices ?? []).reduce((s => s + (Number(i.invoice_amount) || 0), 0);
+        const total_invoiced = (invoices ?? []).reduce((s, i) => s + (Number(i.invoice_amount) || 0), 0);
 
         // Total paid (expenses with category = Прачечная or counterparty containing Альберт)
         const { data: payments } = await supabase
@@ -2568,14 +2569,14 @@ serve(async (req: Request) => {
           .eq("transaction_type", "expense")
           .ilike("counterparty", "%Альберт%");
 
-        const total_paid = (payments ?? []).reduce((s => s + (Number(p.amount) || 0), 0);
+        const total_paid = (payments ?? []).reduce((s, p) => s + (Number(p.amount) || 0), 0);
 
         // Total factual (sum of delivered_cost from albert_visits)
         const { data: visits } = await supabase
           .from("albert_visits")
           .select("delivered_cost");
 
-        const total_factual = (visits ?? []).reduce((s => s + (Number(v.delivered_cost) || 0), 0);
+        const total_factual = (visits ?? []).reduce((s, v) => s + (Number(v.delivered_cost) || 0), 0);
 
         const nominal_balance = total_invoiced - total_paid;
         const factual_balance = total_factual - total_paid;
@@ -2687,20 +2688,20 @@ serve(async (req: Request) => {
         if (!date_from || !date_to) return json({ error: "Missing date_from/date_to" }, 400);
 
         const tables = cash_register === "main" ? ["main_transactions"] : cash_register === "emma" ? ["emma_transactions"] : ["emma_transactions", "main_transactions"];
-        let allTx = [];
+        let allTx: any[] = [];
 
         for (const tbl of tables) {
           let q = supabase.from(tbl).select("*").gte("transaction_date", date_from).lte("transaction_date", date_to + "T23:59:59");
           if (type && type !== "all") q = q.eq("transaction_type", type);
           const { data, error } = await q.order("transaction_date", { ascending: false });
           if (error) throw error;
-          allTx = allTx.concat((data ?? []).map((r => ({ ...r, _source: tbl })));
+          allTx = allTx.concat((data ?? []).map((r) => ({ ...r, _source: tbl })));
         }
 
-        if (filterCat) allTx = allTx.filter((t => (t.category || t.description || "").toLowerCase().includes(filterCat.toLowerCase()));
+        if (filterCat) allTx = allTx.filter((t) => (t.category || t.description || "").toLowerCase().includes(filterCat.toLowerCase()));
 
-        const totalIncome = allTx.filter((t => t.transaction_type === "income").reduce((s => s + Number(t.amount), 0);
-        const totalExpense = allTx.filter((t => t.transaction_type === "expense").reduce((s => s + Number(t.amount), 0);
+        const totalIncome = allTx.filter((t) => t.transaction_type === "income").reduce((s, t) => s + Number(t.amount), 0);
+        const totalExpense = allTx.filter((t) => t.transaction_type === "expense").reduce((s, t) => s + Number(t.amount), 0);
 
         return json({ success: true, data: allTx, summary: { total_income: totalIncome, total_expense: totalExpense, balance: totalIncome - totalExpense, count: allTx.length } });
       }
@@ -2718,10 +2719,10 @@ serve(async (req: Request) => {
         if (error) throw error;
 
         const rows = data ?? [];
-        const totalPay = rows.reduce((s => s + (Number(r.payment_amount) || 35), 0);
+        const totalPay = rows.reduce((s, r) => s + (Number(r.payment_amount) || 35), 0);
         const today = new Date().toISOString().split("T")[0];
-        const past = rows.filter((r => r.cleaning_date <= today);
-        const future = rows.filter((r => r.cleaning_date > today);
+        const past = rows.filter((r) => r.cleaning_date <= today);
+        const future = rows.filter((r) => r.cleaning_date > today);
 
         return json({
           success: true, data: {
@@ -2780,8 +2781,8 @@ serve(async (req: Request) => {
 
         if (error) throw error;
 
-        const totalCost = (data ?? []).reduce((s => s + (Number(r.total_laundry_cost) || 0), 0);
-        const totalItems = (data ?? []).reduce((s => s + (Number(r.quantity) || 0), 0);
+        const totalCost = (data ?? []).reduce((s, r) => s + (Number(r.total_laundry_cost) || 0), 0);
+        const totalItems = (data ?? []).reduce((s, r) => s + (Number(r.quantity) || 0), 0);
 
         return json({ success: true, data: { total_cost: totalCost, total_items: totalItems, movements_count: (data ?? []).length } });
       }
@@ -2798,7 +2799,7 @@ serve(async (req: Request) => {
         const fromLoc = locationMap[from_location] || from_location;
         const toLoc = locationMap[to_location] || to_location;
 
-        const inserted = [];
+        const inserted: any[] = [];
         const itemEntries = Array.isArray(items) ? items : Object.entries(items).map(([k, v]) => ({ item_type: k, quantity: v }));
 
         for (const item of itemEntries) {
@@ -2857,7 +2858,7 @@ serve(async (req: Request) => {
         if (!date_from || !date_to) return json({ error: "Missing date_from/date_to" }, 400);
 
         const tables = cash_register === "main" ? ["main_transactions"] : cash_register === "emma" ? ["emma_transactions"] : ["emma_transactions", "main_transactions"];
-        let allTx = [];
+        let allTx: any[] = [];
 
         for (const tbl of tables) {
           const { data, error } = await supabase.from(tbl).select("*").gte("transaction_date", date_from).lte("transaction_date", date_to + "T23:59:59");
@@ -2895,14 +2896,14 @@ serve(async (req: Request) => {
         const { category: cat, date_from, date_to } = body;
         if (!cat || !date_from || !date_to) return json({ error: "Missing category/date_from/date_to" }, 400);
 
-        let all = [];
+        let all: any[] = [];
         for (const tbl of ["emma_transactions", "main_transactions"]) {
           const { data, error } = await supabase.from(tbl).select("*").gte("transaction_date", date_from).lte("transaction_date", date_to + "T23:59:59");
           if (error) throw error;
-          all = all.concat((data ?? []).filter((t => (t.category || t.description || "").toLowerCase().includes(cat.toLowerCase())));
+          all = all.concat((data ?? []).filter((t) => (t.category || t.description || "").toLowerCase().includes(cat.toLowerCase())));
         }
 
-        return json({ success: true, data: all, total: all.reduce((s => s + Number(t.amount), 0) });
+        return json({ success: true, data: all, total: all.reduce((s, t) => s + Number(t.amount), 0) });
       }
 
       // ─── 12. GET INCOME SOURCES ─────────────────────────────────────────
@@ -2910,7 +2911,7 @@ serve(async (req: Request) => {
         const { date_from, date_to } = body;
         if (!date_from || !date_to) return json({ error: "Missing date_from/date_to" }, 400);
 
-        let all = [];
+        let all: any[] = [];
         for (const tbl of ["emma_transactions", "main_transactions"]) {
           const { data, error } = await supabase.from(tbl).select("*").eq("transaction_type", "income").gte("transaction_date", date_from).lte("transaction_date", date_to + "T23:59:59");
           if (error) throw error;
@@ -2923,7 +2924,7 @@ serve(async (req: Request) => {
           bySource[src] = (bySource[src] || 0) + Number(t.amount);
         }
 
-        return json({ success: true, data: bySource, total: all.reduce((s => s + Number(t.amount), 0) });
+        return json({ success: true, data: bySource, total: all.reduce((s, t) => s + Number(t.amount), 0) });
       }
 
       // ─── 13. GET CLEANER PAYMENT LOG ────────────────────────────────────
@@ -2938,14 +2939,14 @@ serve(async (req: Request) => {
         if (error) throw error;
 
         return json({
-          success: true, data: (data ?? []).map((r => ({
+          success: true, data: (data ?? []).map((r) => ({
             date: r.cleaning_date,
             apartment: APT_DISPLAY[r.apartment] || r.apartment,
             amount: Number(r.payment_amount) || 35,
             paid: r.payment_confirmed ?? false,
             paid_at: r.payment_confirmed_at,
           })),
-          total: (data ?? []).reduce((s => s + (Number(r.payment_amount) || 35), 0),
+          total: (data ?? []).reduce((s, r) => s + (Number(r.payment_amount) || 35), 0),
         });
       }
 
@@ -2960,7 +2961,7 @@ serve(async (req: Request) => {
 
         if (error) throw error;
 
-        const byName: Record<string, { shifts; total; details = {};
+        const byName: Record<string, { shifts: number; total: number; details: any[] }> = {};
         for (const r of data ?? []) {
           const name = r.cleaner_name || "Без имени";
           if (!byName[name]) byName[name] = { shifts: 0, total: 0, details: [] };
@@ -3110,7 +3111,7 @@ serve(async (req: Request) => {
           .eq("transaction_type", "income")
           .gte("transaction_date", date_from)
           .lte("transaction_date", date_to + "T23:59:59");
-        const totalIncome = (incomes ?? []).reduce((s => s + Number(t.amount), 0);
+        const totalIncome = (incomes ?? []).reduce((s, t) => s + Number(t.amount), 0);
 
         // Occupancy: total booked nights / (total days in period * number of apartments)
         const periodDays = Math.max(1, Math.round((new Date(date_to).getTime() - new Date(date_from).getTime()) / 86400000));
@@ -3202,7 +3203,7 @@ serve(async (req: Request) => {
         if (invErr) throw invErr;
 
         let runningDebt = 0;
-        const history = (invoices ?? []).map((inv => {
+        const history = (invoices ?? []).map((inv) => {
           runningDebt += Number(inv.invoice_amount) || 0;
           if (inv.paid) runningDebt -= Number(inv.invoice_amount) || 0;
           return {
@@ -3244,18 +3245,18 @@ serve(async (req: Request) => {
         };
 
         // For each booking check if there's a matching income
-        const withoutIncome = (bookings ?? []).filter((b => {
+        const withoutIncome = (bookings ?? []).filter((b) => {
           const keywords = aptKwMap[b.apartment] || [];
           if (keywords.length === 0) return true;
-          const hasMatch = (incomes ?? []).some((t => {
+          const hasMatch = (incomes ?? []).some((t) => {
             const text = `${t.description || ""} ${t.location || ""}`.toLowerCase();
-            return keywords.some((kw => text.includes(kw));
+            return keywords.some((kw) => text.includes(kw));
           });
           return !hasMatch;
         });
 
         // Get cleaner names from assignments
-        const bookingIds = withoutIncome.map((b => b.id);
+        const bookingIds = withoutIncome.map((b) => b.id);
         const { data: assignments } = await supabase
           .from("cleaning_assignments")
           .select("schedule_id, cleaner_name")
@@ -3266,7 +3267,7 @@ serve(async (req: Request) => {
           if (a.schedule_id && a.cleaner_name) cleanerMap[a.schedule_id] = a.cleaner_name;
         }
 
-        const result = withoutIncome.map((b => ({
+        const result = withoutIncome.map((b) => ({
           ...b,
           cleaner_name: cleanerMap[b.id] || null,
         }));
@@ -3442,7 +3443,7 @@ serve(async (req: Request) => {
 
 module.exports = router;
 
-function json(data = 200) {
+function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
     headers: { ...corsHeaders, "Content-Type": "application/json" },
