@@ -46,7 +46,7 @@ const CLEANER_LOOKUP_CANDIDATES = {
   "Марьяна": ["Марьяна", "Maryana", "Mariana"],
 };
 
-const STANDARD_LINEN: Array<{ item_type: string; quantity: number }> = [
+const STANDARD_LINEN = [
   { item_type: "sheets",        quantity: 1 },
   { item_type: "duvet_covers",  quantity: 1 },
   { item_type: "pillowcases",   quantity: 2 },
@@ -66,7 +66,7 @@ function getAdminChatIds() {
     process.env.IRINA_TELEGRAM_CHAT_ID,
     process.env.EMMA_TELEGRAM_CHAT_ID,
     process.env.OWNER_TELEGRAM_CHAT_ID,
-  ].filter(Boolean)[];
+  ].filter(Boolean);
 }
 
 async function sendTg(token, chatId, text, parseMode = "Markdown", replyMarkup) {
@@ -148,7 +148,7 @@ function assignmentPriority(row) {
   return score;
 }
 
-function dedupeAssignments(rows: any[]) {
+function dedupeAssignments(rows) {
   const grouped = new Map();
 
   for (const row of rows ?? []) {
@@ -164,7 +164,7 @@ function dedupeAssignments(rows: any[]) {
   return Array.from(grouped.values());
 }
 
-function pickBestAssignment(rows: any[]) {
+function pickBestAssignment(rows) {
   const deduped = dedupeAssignments(rows ?? []);
   if (deduped.length === 0) return null;
   return deduped.sort((a, b) => assignmentPriority(b) - assignmentPriority(a))[0] ?? null;
@@ -189,8 +189,8 @@ function getDateRange(row) {
 }
 
 function sameGrandeSlot(
-  a: { cleaning_date?: string | null; checkout_date?: string | null; checkin_date?: string | null },
-  b: { cleaning_date?: string | null; checkout_date?: string | null; checkin_date?: string | null },
+  a,
+  b,
 ) {
   if (a.checkin_date && a.checkout_date && b.checkin_date && b.checkout_date) {
     return a.checkin_date === b.checkin_date && a.checkout_date === b.checkout_date;
@@ -200,19 +200,14 @@ function sameGrandeSlot(
 }
 
 function rangesOverlap(
-  a: { start: string | null; end: string | null },
-  b: { start: string | null; end: string | null },
+  a,
+  b,
 ) {
   if (!a.start || !a.end || !b.start || !b.end) return false;
   return a.start <= b.end && b.start <= a.end;
 }
 
-function suppressGrandeOverlaps<T extends {
-  apartment?: string | null;
-  cleaning_date?: string | null;
-  checkout_date?: string | null;
-  checkin_date?: string | null;
-}>(rows: T[]) {
+function suppressGrandeOverlaps(rows) {
   const grandeRows = rows.filter((row) => row.apartment === "grande");
   if (grandeRows.length === 0) return rows;
 
@@ -294,7 +289,7 @@ async function getEquivalentAssignments(supabase, assignment) {
 
 async function findAssignmentRecord(
   supabase,
-  refs: { assignment_id?: string; schedule_id?: string; id?: string },
+  refs,
 ) {
   const directId = refs.assignment_id ?? refs.id ?? null;
   const scheduleRef = refs.schedule_id ?? refs.id ?? null;
@@ -447,8 +442,8 @@ router.post("/bot-api", async (req, res) => {
           return json({ success: false, already_confirmed: true });
         }
 
-        const items: any[] = Array.isArray(pending.items) ? pending.items : [];
-        const inserted: any[] = [];
+        const items = Array.isArray(pending.items) ? pending.items : [];
+        const inserted = [];
 
         const fixLocation = (loc) => {
           if (!loc) return null;
@@ -1348,7 +1343,7 @@ router.post("/bot-api", async (req, res) => {
 
         let confirmed = 0;
         for (const pending of stale) {
-          const items: any[] = Array.isArray(pending.items) ? pending.items : [];
+          const items = Array.isArray(pending.items) ? pending.items : [];
           if (items.length === 0) continue;
 
           let allOk = true;
@@ -2003,7 +1998,7 @@ router.post("/bot-api", async (req, res) => {
           .eq("id", id);
 
         // Create corresponding movement
-        const movementIds: string[] = [];
+        const movementIds = [];
         if (items && typeof items === "object") {
           for (const [itemType, qty] of Object.entries(items)) {
             if (Number(qty) > 0) {
@@ -2115,7 +2110,7 @@ router.post("/bot-api", async (req, res) => {
       // ─── LAUNDRY: SEND TO ALBERT ─────────────────────────────────────────
       case "send_to_albert": {
         const { items, from_locations } = body;
-        const movementIds: string[] = [];
+        const movementIds = [];
 
         if (items && typeof items === "object" && Object.keys(items).length > 0) {
           for (const [itemType, qty] of Object.entries(items)) {
@@ -2145,7 +2140,7 @@ router.post("/bot-api", async (req, res) => {
         const { items } = body;
         if (!items || typeof items !== "object") return json({ error: "Missing items" }, 400);
 
-        const movementIds: string[] = [];
+        const movementIds = [];
         const { data: prices } = await supabase
           .from("laundry_prices")
           .select("item_key, price")
@@ -2368,7 +2363,7 @@ router.post("/bot-api", async (req, res) => {
         const { source_locations, delivered_items, picked_items, visited_at, notes } = body;
 
         // 1. Create movements for picked_items (dirty → albert_laundry)
-        const pickedMovementIds: string[] = [];
+        const pickedMovementIds = [];
         if (picked_items && typeof picked_items === "object") {
           for (const [itemType, qty] of Object.entries(picked_items)) {
             if (Number(qty) <= 0) continue;
@@ -2391,7 +2386,7 @@ router.post("/bot-api", async (req, res) => {
         }
 
         // 2. Create movements for delivered_items (albert_laundry → clean_stock)
-        const deliveredMovementIds: string[] = [];
+        const deliveredMovementIds = [];
         if (delivered_items && typeof delivered_items === "object") {
           for (const [itemType, qty] of Object.entries(delivered_items)) {
             if (Number(qty) <= 0) continue;
@@ -2688,7 +2683,7 @@ router.post("/bot-api", async (req, res) => {
         if (!date_from || !date_to) return json({ error: "Missing date_from/date_to" }, 400);
 
         const tables = cash_register === "main" ? ["main_transactions"] : cash_register === "emma" ? ["emma_transactions"] : ["emma_transactions", "main_transactions"];
-        let allTx: any[] = [];
+        let allTx = [];
 
         for (const tbl of tables) {
           let q = supabase.from(tbl).select("*").gte("transaction_date", date_from).lte("transaction_date", date_to + "T23:59:59");
@@ -2799,7 +2794,7 @@ router.post("/bot-api", async (req, res) => {
         const fromLoc = locationMap[from_location] || from_location;
         const toLoc = locationMap[to_location] || to_location;
 
-        const inserted: any[] = [];
+        const inserted = [];
         const itemEntries = Array.isArray(items) ? items : Object.entries(items).map(([k, v]) => ({ item_type: k, quantity: v }));
 
         for (const item of itemEntries) {
@@ -2858,7 +2853,7 @@ router.post("/bot-api", async (req, res) => {
         if (!date_from || !date_to) return json({ error: "Missing date_from/date_to" }, 400);
 
         const tables = cash_register === "main" ? ["main_transactions"] : cash_register === "emma" ? ["emma_transactions"] : ["emma_transactions", "main_transactions"];
-        let allTx: any[] = [];
+        let allTx = [];
 
         for (const tbl of tables) {
           const { data, error } = await supabase.from(tbl).select("*").gte("transaction_date", date_from).lte("transaction_date", date_to + "T23:59:59");
@@ -2896,7 +2891,7 @@ router.post("/bot-api", async (req, res) => {
         const { category: cat, date_from, date_to } = body;
         if (!cat || !date_from || !date_to) return json({ error: "Missing category/date_from/date_to" }, 400);
 
-        let all: any[] = [];
+        let all = [];
         for (const tbl of ["emma_transactions", "main_transactions"]) {
           const { data, error } = await supabase.from(tbl).select("*").gte("transaction_date", date_from).lte("transaction_date", date_to + "T23:59:59");
           if (error) throw error;
@@ -2911,7 +2906,7 @@ router.post("/bot-api", async (req, res) => {
         const { date_from, date_to } = body;
         if (!date_from || !date_to) return json({ error: "Missing date_from/date_to" }, 400);
 
-        let all: any[] = [];
+        let all = [];
         for (const tbl of ["emma_transactions", "main_transactions"]) {
           const { data, error } = await supabase.from(tbl).select("*").eq("transaction_type", "income").gte("transaction_date", date_from).lte("transaction_date", date_to + "T23:59:59");
           if (error) throw error;
@@ -2961,7 +2956,7 @@ router.post("/bot-api", async (req, res) => {
 
         if (error) throw error;
 
-        const byName: Record<string, { shifts: number; total: number; details: any[] }> = {};
+        const byName = {};
         for (const r of data ?? []) {
           const name = r.cleaner_name || "Без имени";
           if (!byName[name]) byName[name] = { shifts: 0, total: 0, details: [] };

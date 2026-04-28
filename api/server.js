@@ -44,7 +44,11 @@ app.use("/api", require("./routes/sync-ical"));
 try { app.use("/api", require("./routes/bot-api")); } catch(e) { console.warn("[WARN] bot-api skipped:", e.message); }
 app.use("/api", require("./routes/telegram-webhook"));
 
+// === VOICE QUERY ===
+app.use("/api", require("./routes/voice-query"));
+
 // === CARWASH TRACKING ROUTES ===
+app.use("/api", require("./routes/db-proxy"));
 app.use("/api", require("./routes/scrape-carwash"));
 app.use("/api", require("./routes/manage-users"));
 app.use("/api", require("./routes/ai-assistant"));
