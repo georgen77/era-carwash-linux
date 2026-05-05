@@ -44,8 +44,13 @@ export default function RevenueCharts({ results, dateFrom, dateTo }: Props) {
         for (const row of wash.rows) {
           const day = row[0]; // DD.MM.YYYY
           if (!day) continue;
-          const parts = day.split(".");
-          const monthKey = parts.length >= 3 ? `${parts[1]}.${parts[2]}` : day;
+          let dd, mm, yyyy;
+          if (day.includes('-')) {
+            [yyyy, mm, dd] = day.split('-');
+          } else {
+            [dd, mm, yyyy] = day.split('.');
+          }
+          const monthKey = (mm && yyyy) ? `${mm}.${yyyy}` : day;
           if (!monthMap.has(monthKey)) monthMap.set(monthKey, {});
           const entry = monthMap.get(monthKey)!;
           entry[wash.washName] = (entry[wash.washName] || 0) + parseFloat(row[1] || "0");

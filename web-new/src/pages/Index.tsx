@@ -118,8 +118,13 @@ function aggregateRowsByMonth(rows: string[][]): string[][] {
   for (const row of rows) {
     const day = row[0];
     if (!day) continue;
-    const parts = day.split(".");
-    const monthKey = parts.length >= 3 ? `${parts[1]}.${parts[2]}` : day;
+    let dd, mm, yyyy;
+    if (day.includes('-')) {
+      [yyyy, mm, dd] = day.split('-');
+    } else {
+      [dd, mm, yyyy] = day.split('.');
+    }
+    const monthKey = (mm && yyyy) ? `${mm}.${yyyy}` : day;
     if (!monthMap.has(monthKey)) {
       monthMap.set(monthKey, row.map((_, i) => (i === 0 ? monthKey : "0")));
     }
@@ -465,9 +470,17 @@ const Index = () => {
         dateMap.get(dateKey)!.push({ wash: wash.washName, date: row[0], amount: row[1] });
       });
     });
+    const parseDateForSort = (s: string): [number, number, number] => {
+      if (s.includes('-')) {
+        const [y, m, d] = s.split('-').map(Number);
+        return [d, m, y];
+      }
+      const [d, m, y] = s.split('.').map(Number);
+      return [d, m, y];
+    };
     const sortedDates = [...dateMap.keys()].sort((a, b) => {
-      const [da, ma, ya] = a.split('.').map(Number);
-      const [db, mb, yb] = b.split('.').map(Number);
+      const [da, ma, ya] = parseDateForSort(a);
+      const [db, mb, yb] = parseDateForSort(b);
       return (yb - ya) || (mb - ma) || (db - da);
     });
     sortedDates.forEach((dateKey) => {
